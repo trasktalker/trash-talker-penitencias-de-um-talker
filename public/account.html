@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Trash Talker</title>
+  <link rel="icon" href="/logo-talker.svg" />
+  <link rel="stylesheet" href="/css/app.css" />
+  <script src="/js/ui.js" defer></script>
+  <script src="/js/theme.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Pular para o conteúdo</a>
+  <div class="app-shell">
+    <aside class="sidebar" id="app-sidebar" aria-label="Navegação principal">
+      <div class="sidebar-header">
+        <a href="/dashboard" class="brand">
+          <img class="brand-icon" src="/logo-talker.svg" alt="" />
+          <span class="brand-name">Trash Talker</span>
+        </a>
+        <button type="button" class="sidebar-toggle" title="Ocultar barra lateral">
+          <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2.5" y="3.5" width="15" height="13" rx="2.5"></rect>
+            <line x1="7.5" y1="3.5" x2="7.5" y2="16.5"></line>
+          </svg>
+        </button>
+      </div>
+
+      <form class="sidebar-new-chat">
+        <button type="submit">
+          <svg class="icon" viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"></line><line x1="4" y1="10" x2="16" y2="10"></line></svg>
+          <span class="sidebar-text">Nova conversa</span>
+        </button>
+      </form>
+
+      <div class="sidebar-section sidebar-chats">
+        <div class="sidebar-label">Conversas recentes</div>
+        <ul class="chat-list"></ul>
+      </div>
+
+      <div class="sidebar-section sidebar-secondary" role="navigation" aria-label="Conta e configurações">
+        <a href="/dashboard/settings">
+          <svg class="icon" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="5"></circle><circle cx="10" cy="10" r="1.7"></circle><line x1="10" y1="2.4" x2="10" y2="4.3" stroke-width="2.4"></line><line x1="10" y1="15.7" x2="10" y2="17.6" stroke-width="2.4"></line><line x1="3.5" y1="6.2" x2="5.2" y2="7.2" stroke-width="2.4"></line><line x1="14.8" y1="12.8" x2="16.5" y2="13.8" stroke-width="2.4"></line><line x1="3.5" y1="13.8" x2="5.2" y2="12.8" stroke-width="2.4"></line><line x1="14.8" y1="7.2" x2="16.5" y2="6.2" stroke-width="2.4"></line></svg>
+          <span class="sidebar-text">Configurações</span>
+        </a>
+      </div>
+
+      <div class="sidebar-footer">
+        <a href="/dashboard/account" class="user-chip">
+          <span class="avatar-slot"></span>
+          <span class="user-name"></span>
+        </a>
+        <form>
+          <button type="submit" class="logout-btn" title="Sair">
+            <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3.5H5a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h3"></path><line x1="8" y1="10" x2="16.5" y2="10"></line><polyline points="13.3 6.8 16.5 10 13.3 13.2"></polyline></svg>
+          </button>
+        </form>
+      </div>
+    </aside>
+
+    <div class="app-main">
+      <header class="topbar">
+        <button class="sidebar-toggle" title="Mostrar barra lateral">
+          <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2.5" y="3.5" width="15" height="13" rx="2.5"></rect>
+            <line x1="7.5" y1="3.5" x2="7.5" y2="16.5"></line>
+          </svg>
+        </button>
+        <h1 class="topbar-title">Conta</h1>
+      </header>
+
+      <main class="app-content" id="main-content" tabindex="-1">
+        <div class="account-page">
+          <!-- Banners de erro/sucesso: no original vinham de query params
+               (?error=...&success=1) porque o servidor redirecionava
+               depois do POST. Agora js/account.js só mostra/esconde
+               estas mesmas divs após a resposta do fetch. -->
+          <div id="account-error" class="banner banner-error" hidden></div>
+          <div id="account-success" class="banner banner-success" hidden>
+            Alterações salvas com sucesso.
+          </div>
+
+          <form id="account-form" class="account-form">
+            <p class="field-hint" id="avatar-help">Avatar (opcional). Escolha uma imagem ou mantenha o avatar padrão.</p>
+            <div class="avatar-picker">
+              <!-- Preenchido por js/account.js com renderAvatarHTML(). -->
+              <button type="button" id="avatar-trigger" class="avatar-trigger" aria-label="Alterar avatar" aria-describedby="avatar-help"></button>
+              <input type="file" id="avatar-file-input" accept="image/*" hidden />
+              <input type="hidden" name="image" id="avatar-image-input" value="" />
+
+              <div class="illustrated-avatars">
+                <button type="button" class="illustrated-avatar-btn" data-avatar-id="avatar_robot" title="Robô Futurista">
+                  <img src="/avatars/avatar_robot.svg" alt="Robô Futurista" />
+                </button>
+                <button type="button" class="illustrated-avatar-btn" data-avatar-id="avatar_cat" title="Gato Cool">
+                  <img src="/avatars/avatar_cat.svg" alt="Gato Cool" />
+                </button>
+                <button type="button" class="illustrated-avatar-btn" data-avatar-id="avatar_astronaut" title="Astronauta">
+                  <img src="/avatars/avatar_astronaut.svg" alt="Astronauta" />
+                </button>
+                <button type="button" class="illustrated-avatar-btn" data-avatar-id="avatar_ninja" title="Ninja das Sombras">
+                  <img src="/avatars/avatar_ninja.svg" alt="Ninja das Sombras" />
+                </button>
+                <button type="button" class="illustrated-avatar-btn" data-avatar-id="avatar_gamer" title="Gamer Pro">
+                  <img src="/avatars/avatar_gamer.svg" alt="Gamer Pro" />
+                </button>
+                <button type="button" class="illustrated-avatar-btn" data-avatar-id="avatar_unicorn" title="Unicórnio Mágico">
+                  <img src="/avatars/avatar_unicorn.svg" alt="Unicórnio Mágico" />
+                </button>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="name">Nome da conta</label>
+              <input id="name" name="name" type="text" required />
+              <span class="field-hint">Obrigatório para identificar sua conta.</span>
+            </div>
+
+            <div class="field">
+              <label for="displayName">Apelido (opcional)</label>
+              <input id="displayName" type="text" placeholder="Como quer ser chamado" />
+              <span class="field-hint">Se preferir, escolha como quer ser chamado nas conversas.</span>
+            </div>
+
+            <div class="field">
+              <label for="pronoun">Pronome (opcional)</label>
+              <input id="pronoun" type="text" placeholder="Ex.: ele/dele, ela/dela, elu/delu" />
+              <span class="field-hint">A IA vai usar esse pronome para se referir a você</span>
+            </div>
+
+            <div class="field">
+              <label for="tag-input">Interesses (opcionais)</label>
+              <span class="field-hint">Você pode compartilhar assuntos que gosta de conversar.</span>
+              <div id="interest-tags" class="tag-list"></div>
+              <div class="tag-input-row">
+                <input id="tag-input" type="text" placeholder="Adicionar interesse customizado..." />
+                <button type="button" id="tag-add-btn" aria-label="Adicionar interesse">+</button>
+              </div>
+              <div class="tag-suggestions">
+                <button type="button" class="tag-suggestion" data-tag="Games">Games</button>
+                <button type="button" class="tag-suggestion" data-tag="Música">Música</button>
+                <button type="button" class="tag-suggestion" data-tag="Esportes">Esportes</button>
+                <button type="button" class="tag-suggestion" data-tag="Tecnologia">Tecnologia</button>
+                <button type="button" class="tag-suggestion" data-tag="Cinema">Cinema</button>
+                <button type="button" class="tag-suggestion" data-tag="Livros">Livros</button>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" id="account-cancel" class="btn-outline">Cancelar</button>
+              <button type="submit" class="btn-primary">Salvar Alterações</button>
+            </div>
+          </form>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/modal.js"></script>
+  <script src="/js/avatar.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/layout.js"></script>
+  <script src="/js/account.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+
+Flask==3.0.3
+flask-cors==4.0.1
+psycopg2-binary==2.9.12
+python-dotenv==1.0.1
+google-genai==2.18.1
+pyotp==2.10.0
+qrcode==8.2
+cryptography==50.0.1

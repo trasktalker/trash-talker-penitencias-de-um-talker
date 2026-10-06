@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Trash Talker - Criar conta</title>
+  <link rel="icon" href="/logo-talker.svg" />
+  <link rel="stylesheet" href="/css/app.css" />
+  <script src="/js/ui.js" defer></script>
+  <script src="/js/theme.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Pular para o conteúdo</a>
+  <main class="auth-page" id="main-content" tabindex="-1">
+    <aside class="auth-aside" aria-hidden="true">
+      <img class="auth-illustration" src="/images/auth-signup-icon.svg" alt="" width="600" height="600" />
+    </aside>
+    <div class="auth-card">
+      <a class="auth-brand" href="/" aria-label="Trash Talker — início"><img src="/logo-talker.svg" alt="" width="56" height="56" /></a>
+      <h1 class="auth-title">Trash Talker</h1>
+      <p class="auth-subtitle">Crie sua conta</p>
+
+      <!-- js/signup.js intercepta o envio e chama POST /api/signup. -->
+      <form class="auth-form">
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="m@example.com" required />
+        </div>
+        <div class="field">
+          <label for="name">Nome</label>
+          <input id="name" name="name" type="text" placeholder="Ex: João Silva" required />
+        </div>
+        <div class="field-row-2 password-fields">
+          <div class="field">
+            <label for="password">Senha</label>
+            <input id="password" name="password" type="password" required minlength="8" />
+          </div>
+          <div class="field">
+            <label for="confirm-password">Confirmar Senha</label>
+            <input id="confirm-password" type="password" required minlength="8" />
+          </div>
+          <ul id="password-requirements" class="password-requirements" hidden></ul>
+        </div>
+
+        <!-- js/signup.js monta aqui as duas confirmações (renderConsentChecks em js/auth.js). -->
+        <div id="signup-consents"></div>
+
+        <div id="signup-error" class="field-error" hidden></div>
+
+        <button type="submit" class="btn-primary btn-block">Criar conta</button>
+
+        <p class="auth-footer-text">
+          Já tem uma conta? <a href="/login">Entrar</a>
+        </p>
+      </form>
+    </div>
+    <p class="auth-legal">
+      <a href="/terms">Termos de Uso</a> ·
+      <a href="/privacy">Política de Privacidade</a> ·
+      <a href="/cookies">Cookies</a>
+    </p>
+  </main>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/signup.js"></script>
+</body>
+</html>

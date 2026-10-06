@@ -1,0 +1,2182 @@
+/* Trash Talker - CSS único, sem framework/build step (tokens portados de globals.css) */
+
+/* Cross-fade nativo do navegador entre navegações (app é multi-página de
+   propósito, sem router em JS - ver AGENTS.md). Ignorado silenciosamente
+   em navegadores sem suporte. */
+@view-transition {
+  navigation: auto;
+}
+
+:root {
+  color-scheme: light;
+  --radius: 0.65rem;
+  --background: #fcf4cf;
+  --foreground: #2d1d1a;
+  --card: #ffffff;
+  --card-foreground: #2d1d1a;
+  --primary: #d19415;
+  --primary-foreground: #ffffff;
+  --secondary: #f0e4b8;
+  --secondary-foreground: #4a332d;
+  --muted: #f0e4b8;
+  --muted-foreground: #7d635c;
+  --accent: #f0e4b8;
+  --accent-foreground: #4a332d;
+  --destructive: #cc3333;
+  --destructive-foreground: #ffffff;
+  --border: #e6d8a7;
+  --input: #e6d8a7;
+  --ring: #d19415;
+  --sidebar: #fdf8e3;
+  --sidebar-foreground: #2d1d1a;
+  --sidebar-border: #e6d8a7;
+}
+
+html.dark {
+  color-scheme: dark;
+  --background: #2a221f;
+  --foreground: #fcf6f5;
+  --card: #332b27;
+  --card-foreground: #fcf6f5;
+  --primary: #eb6a40;
+  --primary-foreground: #170603;
+  --secondary: #423631;
+  --secondary-foreground: #fcf6f5;
+  --muted: #423631;
+  --muted-foreground: #a89a95;
+  --accent: #423631;
+  --accent-foreground: #fcf6f5;
+  --destructive: #993333;
+  --destructive-foreground: #ffffff;
+  --border: #4d403a;
+  --input: #4d403a;
+  --ring: #eb6a40;
+  --sidebar: #241d1a;
+  --sidebar-foreground: #fcf6f5;
+  --sidebar-border: #3b302c;
+}
+
+/* Sem bloco @media (prefers-color-scheme): o tema é sempre uma escolha
+   explícita gravada em localStorage e aplicada como html.dark pelo script
+   inline em <head> (antes do paint) - ver js/theme.js. Um @media aqui só
+   sobrescreveria parte dos tokens acima e dessincronizaria a paleta. */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--background);
+  color: var(--foreground);
+}
+
+a {
+  color: inherit;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* --- Buttons --- */
+
+.btn-primary,
+.btn-outline,
+.btn-ghost,
+.btn-destructive {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  padding: 0.6rem 1.25rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border: none;
+}
+
+.btn-outline {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--foreground);
+}
+
+.btn-ghost {
+  background: transparent;
+  border: none;
+  color: var(--foreground);
+}
+
+.btn-destructive {
+  background: var(--destructive);
+  color: var(--destructive-foreground);
+  border: none;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.btn-lg {
+  padding: 0.85rem 2rem;
+  font-size: 1.05rem;
+}
+
+/* --- Sidebar / app shell --- */
+
+.app-shell {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  background: var(--sidebar);
+  color: var(--sidebar-foreground);
+  border-right: 1px solid var(--sidebar-border);
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  gap: 1rem;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.brand-icon {
+  display: inline-flex;
+  width: 2.25rem;
+  height: 2.25rem;
+  object-fit: contain;
+}
+
+/* Ícones SVG desenhados à mão (mesmo estilo do botão da sidebar) que
+   ficam misturados com texto (links, botões, títulos) - alinha com a
+   linha de base do texto ao redor. Dentro de containers flex
+   centralizados (.sidebar-toggle, .composer button, etc.) isso não
+   tem efeito, então é seguro aplicar em qualquer ícone inline. */
+.icon {
+  flex-shrink: 0;
+  vertical-align: -0.125em;
+}
+
+.sidebar-new-chat button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 100%;
+  border: none;
+  border-radius: 0.75rem;
+  padding: 0.65rem;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-weight: 600;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease,
+    background 0.12s ease;
+}
+
+.sidebar-new-chat button:hover {
+  background: color-mix(in srgb, var(--primary) 85%, black);
+}
+
+.sidebar-new-chat button:active {
+  background: color-mix(in srgb, var(--primary) 70%, black);
+  transform: scale(0.94);
+  box-shadow: 0 1px 6px color-mix(in srgb, var(--primary) 40%, transparent);
+  opacity: 0.92;
+}
+
+.sidebar-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.sidebar-chats {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.sidebar-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted-foreground);
+  padding: 0.25rem 0.5rem;
+}
+
+.chat-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.chat-item {
+  display: flex;
+  align-items: center;
+  border-radius: 0.5rem;
+}
+
+.chat-item:hover {
+  background: var(--accent);
+}
+
+.chat-link {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.chat-link-icon {
+  flex-shrink: 0;
+}
+
+.chat-link-text {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chat-actions {
+  display: flex;
+  gap: 0.15rem;
+  padding-right: 0.25rem;
+}
+
+.chat-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  border-radius: 0.35rem;
+  padding: 0.3rem;
+}
+
+.chat-actions button:hover {
+  background: var(--border);
+}
+
+.sidebar-secondary {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-secondary a {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+}
+
+.sidebar-secondary a:hover {
+  background: var(--accent);
+}
+
+.sidebar-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-top: 1px solid var(--sidebar-border);
+  padding-top: 0.75rem;
+}
+
+.user-chip {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: inherit;
+  padding: 0.35rem;
+  border-radius: 0.5rem;
+}
+
+.user-chip:hover {
+  background: var(--accent);
+}
+
+.user-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.logout-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.6rem;
+}
+
+.logout-btn:hover {
+  background: var(--accent);
+}
+
+.avatar {
+  border-radius: 999px;
+  object-fit: cover;
+  display: inline-block;
+}
+
+.avatar-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: none;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: inherit;
+}
+
+.sidebar-toggle:hover {
+  background: var(--accent);
+}
+
+.topbar-title {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.app-content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+@media (max-width: 860px) {
+  .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 20;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+  }
+
+  .app-shell.sidebar-open .sidebar {
+    transform: translateX(0);
+  }
+}
+
+/* Sidebar retrátil no desktop: minimiza pra width:0 (mesmo botão ☰ da
+   gaveta mobile, mas aqui a sidebar é visível por padrão e o estado
+   colapsado persiste em localStorage - ver frontend/js/layout.js e o
+   script inline no <head> de cada página com sidebar). */
+@media (min-width: 861px) {
+  .sidebar {
+    transition:
+      width 0.2s ease,
+      padding 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  /* Colapsada, a sidebar não some por inteiro: vira uma trilha estreita
+     só com ícones - novo chat, histórico reduzido (cada item continua
+     um link de verdade pra conversa, só sem o título; o título some
+     mas fica disponível como tooltip nativo ao passar o mouse),
+     Configurações e a foto de perfil. */
+  html.sidebar-collapsed .sidebar {
+    width: 4.5rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    overflow: hidden;
+  }
+
+  html.sidebar-collapsed .sidebar-header,
+  html.sidebar-collapsed .sidebar-footer {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  html.sidebar-collapsed .brand-name,
+  html.sidebar-collapsed .sidebar-label,
+  html.sidebar-collapsed .sidebar-text,
+  html.sidebar-collapsed .chat-link-text,
+  html.sidebar-collapsed .chat-actions,
+  html.sidebar-collapsed .user-name,
+  html.sidebar-collapsed .sidebar-header .sidebar-toggle {
+    display: none;
+  }
+
+  html.sidebar-collapsed .chat-link,
+  html.sidebar-collapsed .sidebar-secondary a,
+  html.sidebar-collapsed .user-chip {
+    justify-content: center;
+  }
+
+  /* Colapsada, o botão de dentro da sidebar (ao lado do logo) some -
+     ver regra acima - e o da topbar assume, já que é o único jeito de
+     reabrir a partir daí. No mobile (fora deste media query) o da
+     topbar continua sempre visível, é o único jeito de abrir a gaveta. */
+  .topbar .sidebar-toggle {
+    display: none;
+  }
+
+  html.sidebar-collapsed .topbar .sidebar-toggle {
+    display: inline-flex;
+  }
+}
+
+/* --- Welcome / composer --- */
+
+.welcome-screen {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  text-align: center;
+  gap: 1rem;
+}
+
+.welcome-screen h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+}
+
+.welcome-screen p {
+  color: var(--muted-foreground);
+  max-width: 32rem;
+}
+
+.composer {
+  position: relative;
+  width: 100%;
+  max-width: 42rem;
+  margin: 0 auto;
+  display: flex;
+  align-items: flex-end;
+}
+
+.composer textarea {
+  width: 100%;
+  min-height: 60px;
+  resize: none;
+  border-radius: 1rem;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--card-foreground);
+  padding: 1rem 15rem 1rem 1rem;
+}
+
+/* Fileira de acoes flutuando dentro do campo, a direita: seletor de
+   personalidade + seta de enviar, lado a lado. */
+.composer-actions {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* Especifico ([type=submit]) de proposito: os botoes do seletor de
+   personalidade tambem ficam dentro do .composer e nao devem herdar o
+   visual redondo/laranja da seta de enviar. */
+.composer button[type="submit"] {
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  border-radius: 999px;
+  border: none;
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.composer button[type="submit"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Enquanto a IA responde, a mesma seta vira o quadrado de "parar" (ver
+   setComposerPensando em js/chat.js). Continua clicável - a regra de
+   :disabled acima não se aplica porque neste estado o botão nunca fica
+   desabilitado. */
+.composer button[type="submit"].is-stop {
+  background: var(--foreground);
+  color: var(--background);
+}
+
+/* --- Modo de voz (BETA / experimental, ver js/voice.js) ---
+   Tudo aqui some sozinho quando o navegador não tem Web Speech API: os
+   contêineres ficam vazios (:empty) e o campo não ganha .has-voice, então
+   o composer volta a ser exatamente o de antes. */
+
+.voice-beta-label {
+  width: 100%;
+  max-width: 42rem;
+  margin: 0 auto 0.4rem;
+  text-align: center;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+.voice-beta-label:empty {
+  display: none;
+}
+
+.voice-controls {
+  display: flex;
+  align-items: center;
+}
+
+.voice-controls:empty {
+  display: none;
+}
+
+/* Espaço extra para o microfone dentro do campo - só quando ele existe
+   de verdade (a classe é posta por initVoiceInput). 15rem de antes +
+   2rem do botão + 0.4rem do gap. */
+.composer.has-voice textarea {
+  padding-right: 17.5rem;
+}
+
+/* Mesma família visual do pill de personalidade (contorno discreto), e
+   não da seta laranja de enviar - o microfone é ação secundária. */
+.voice-mic-button {
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--foreground);
+}
+
+.voice-mic-button:hover:not(:disabled) {
+  background: var(--accent);
+}
+
+.voice-mic-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Gravando: vermelho pulsante, para não restar dúvida de que o
+   microfone está aberto. */
+.voice-mic-button.is-recording {
+  border-color: transparent;
+  background: var(--destructive);
+  color: var(--primary-foreground);
+  animation: voice-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes voice-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--destructive) 55%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 0.35rem color-mix(in srgb, var(--destructive) 0%, transparent);
+  }
+}
+
+/* Botão de ouvir, terceiro filho da bolha (.msg-bubble é flex). Fica
+   apagado até o mouse chegar perto, para não poluir a conversa. */
+.voice-speak-button {
+  flex-shrink: 0;
+  align-self: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted-foreground);
+  opacity: 0.55;
+  transition: opacity 0.15s ease, color 0.15s ease;
+}
+
+.msg-bubble:hover .voice-speak-button,
+.voice-speak-button:focus-visible {
+  opacity: 1;
+}
+
+.voice-speak-button.is-speaking {
+  opacity: 1;
+  color: var(--primary);
+}
+
+/* Campo bloqueado enquanto a resposta não chega: some com o cursor de
+   texto e deixa claro que não dá pra digitar agora, sem apagar o que o
+   placeholder está dizendo. */
+.composer textarea:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* Em telas estreitas não há espaço para o pill + seta flutuando dentro
+   do campo: o texto reservaria tanta margem à direita que quebraria em
+   várias linhas e passaria por baixo do pill. Aí as ações descem para
+   uma linha própria embaixo do campo. */
+@media (max-width: 560px) {
+  .composer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .composer textarea,
+  /* .has-voice tem especificidade maior que a regra acima e venceria
+     mesmo aqui dentro - precisa ser repetida no media query, senão o
+     campo continuaria com 17.5rem de padding numa tela de 390px. */
+  .composer.has-voice textarea {
+    padding-right: 1rem;
+  }
+
+  .composer-actions {
+    position: static;
+    transform: none;
+    justify-content: flex-end;
+  }
+}
+
+.composer textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* --- Chat view --- */
+
+.chat-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: calc(100vh - 4rem);
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.chat-empty {
+  margin: auto;
+  color: var(--muted-foreground);
+}
+
+.msg-bubble {
+  display: flex;
+  gap: 0.75rem;
+  max-width: 42rem;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.msg-user {
+  flex-direction: row-reverse;
+}
+
+.msg-avatar {
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+}
+
+.msg-content {
+  max-width: 80%;
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
+  white-space: pre-wrap;
+  background: var(--muted);
+  color: var(--foreground);
+}
+
+.msg-user .msg-content {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.msg-typing .msg-content {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.95rem 1.1rem;
+}
+
+.typing-dot {
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.4;
+  animation: typing-bounce 1.2s infinite ease-in-out;
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.typing-dot:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes typing-bounce {
+  0%, 60%, 100% {
+    opacity: 0.4;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
+.chat-composer {
+  padding: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+/* --- Auth pages --- */
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 2rem 1.5rem;
+  background: var(--muted);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 26rem;
+  background: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.08);
+}
+
+/* Preto a 8% some sobre o fundo escuro - como o tema escuro é o padrão,
+   este é o primeiro card que todo visitante vê (login/cadastro). */
+html.dark .auth-card {
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.4);
+}
+
+.auth-title {
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.auth-subtitle {
+  text-align: center;
+  color: var(--muted-foreground);
+  margin-bottom: 1.5rem;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.field-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+/* Sem isso, o item do grid herda o min-content do <input> (que não
+   encolhe) como seu min-width:auto implícito, e a coluna "1fr" estoura o
+   card em telas estreitas em vez de encolher o input. */
+.field-row-2 > .field {
+  min-width: 0;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.field label {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.field-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.field input,
+.field textarea {
+  border: 1px solid var(--input);
+  border-radius: 0.5rem;
+  padding: 0.55rem 0.75rem;
+  background: var(--card);
+  color: var(--card-foreground);
+}
+
+.field input:disabled {
+  color: var(--muted-foreground);
+  background: var(--muted);
+}
+
+.field-hint {
+  font-size: 0.7rem;
+  color: var(--muted-foreground);
+}
+
+.field-error {
+  color: var(--destructive);
+  font-size: 0.85rem;
+  text-align: center;
+  background: color-mix(in srgb, var(--destructive) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--destructive) 20%, transparent);
+  border-radius: 0.5rem;
+  padding: 0.6rem;
+  /* Mensagens de senha vêm como uma regra não cumprida por linha
+     (separadas por "\n"), tanto as do backend quanto as montadas por
+     passwordRequirementsErrorMessage() em js/auth.js. */
+  white-space: pre-line;
+}
+
+.password-requirements {
+  list-style: none;
+  margin: 0.15rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.password-requirements li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+  color: var(--muted-foreground);
+}
+
+.password-requirements li::before {
+  content: "✕";
+  color: var(--destructive);
+  font-size: 0.65rem;
+}
+
+.password-requirements li.met {
+  color: var(--muted-foreground);
+}
+
+.password-requirements li.met::before {
+  content: "✓";
+  color: var(--primary);
+}
+
+.link-muted {
+  font-size: 0.85rem;
+  color: var(--muted-foreground);
+  text-decoration: underline;
+}
+
+.auth-footer-text {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--muted-foreground);
+}
+
+.auth-legal {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  text-align: center;
+  max-width: 26rem;
+}
+
+.banner {
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.banner-error {
+  background: color-mix(in srgb, var(--destructive) 10%, transparent);
+  color: var(--destructive);
+  border: 1px solid color-mix(in srgb, var(--destructive) 20%, transparent);
+  /* Mesmo motivo do .field-error: mensagens de senha vêm uma regra por linha. */
+  white-space: pre-line;
+}
+
+.banner-success {
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  color: var(--primary);
+}
+
+/* --- Account page --- */
+
+.account-page {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.account-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.avatar-picker {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.avatar-trigger {
+  border: none;
+  background: transparent;
+  padding: 0;
+  border-radius: 999px;
+}
+
+.illustrated-avatars {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.illustrated-avatar-btn {
+  border: 2px solid var(--border);
+  border-radius: 999px;
+  padding: 2px;
+  background: transparent;
+}
+
+.illustrated-avatar-btn img {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 999px;
+  display: block;
+}
+
+.illustrated-avatar-btn.selected {
+  border-color: var(--primary);
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  min-height: 3rem;
+  padding: 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--background) 60%, transparent);
+}
+
+.tag-empty {
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+}
+
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+  border-radius: 999px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
+}
+
+.tag-chip button {
+  border: none;
+  background: transparent;
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.tag-input-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.tag-input-row input {
+  flex: 1;
+  border: 1px solid var(--input);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--card);
+  color: var(--card-foreground);
+}
+
+.tag-input-row button {
+  border: 1px solid var(--border);
+  background: transparent;
+  border-radius: 0.5rem;
+  padding: 0 0.75rem;
+}
+
+.tag-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.6rem;
+}
+
+.tag-suggestion {
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--card-foreground);
+  border-radius: 999px;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.8rem;
+}
+
+.tag-suggestion.active {
+  background: color-mix(in srgb, var(--primary) 15%, transparent);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+/* --- Settings page --- */
+
+.settings-page {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.card {
+  background: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.card-danger {
+  border-color: color-mix(in srgb, var(--destructive) 30%, transparent);
+}
+
+.card-danger h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--destructive);
+}
+
+.theme-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.theme-buttons button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid var(--border);
+  background: transparent;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+}
+
+.theme-buttons button.active {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-color: var(--primary);
+}
+
+.danger-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px solid color-mix(in srgb, var(--destructive) 20%, transparent);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Fileira de ações lado a lado dentro de um .card (links/botão peer,
+   não um form). */
+.card-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* --- Information page --- */
+
+.information-page {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.information-page h1 {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.information-page h2 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.5rem;
+}
+
+.muted {
+  color: var(--muted-foreground);
+}
+
+.personality-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.personality-card {
+  background: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.personality-photo {
+  aspect-ratio: 1;
+  background: var(--muted);
+  position: relative;
+}
+
+.personality-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.personality-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.tag-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.pill {
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+  color: var(--primary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+}
+
+.rules-section {
+  background: color-mix(in srgb, var(--muted) 50%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.rules-section ul {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.static-page {
+  max-width: 40rem;
+  margin: 4rem auto;
+  padding: 0 1.5rem;
+}
+
+.static-page h1 {
+  font-size: 1.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.static-page .static-updated {
+  color: var(--muted-foreground);
+  font-size: 0.85rem;
+  margin-bottom: 2.5rem;
+}
+
+.static-page h2 {
+  font-size: 1.15rem;
+  margin-top: 2rem;
+  margin-bottom: 0.6rem;
+}
+
+.static-page p {
+  margin-bottom: 0.9rem;
+  line-height: 1.65;
+}
+
+.static-page ul {
+  margin: 0 0 0.9rem 1.25rem;
+  padding: 0;
+  line-height: 1.65;
+}
+
+.static-page li {
+  margin-bottom: 0.35rem;
+}
+
+.static-page a {
+  color: var(--primary);
+}
+
+/* === LANDING PAGE (index.html) === */
+
+.lp {
+  --lp-glow: var(--primary);
+}
+
+/* Nav */
+
+.lp-nav {
+  border-bottom: 1px solid var(--border);
+}
+
+.lp-nav .lp-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 1.25rem;
+  padding-bottom: 1.25rem;
+}
+
+.lp-nav-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+/* [hidden] sozinho perde para o display: inline-flex de
+   .btn-primary/.btn-ghost/.btn-outline (regra do autor sempre vence a
+   do user-agent) - sem isto, os dois estados (logado/deslogado)
+   ficariam sobrepostos na tela ao mesmo tempo. */
+.lp-nav-actions [hidden],
+.lp-hero-actions [hidden] {
+  display: none !important;
+}
+
+/* Hero */
+
+.lp-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 5rem 0 4rem;
+  text-align: center;
+}
+
+.lp-hero-glow {
+  position: absolute;
+  top: -40%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--lp-glow) 18%, transparent) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.lp-container {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.lp-badge {
+  display: inline-block;
+  background: color-mix(in srgb, var(--primary) 14%, transparent);
+  color: var(--primary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 0.35rem 1rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--primary) 25%, transparent);
+  margin-bottom: 1.5rem;
+}
+
+.lp-hero-title {
+  font-size: clamp(2.2rem, 5vw, 3.6rem);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.5rem;
+}
+
+.lp-gradient-text {
+  background: linear-gradient(135deg, var(--primary) 0%, color-mix(in srgb, var(--primary) 60%, #ff6b6b) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.lp-hero-sub {
+  font-size: 1.15rem;
+  color: var(--muted-foreground);
+  max-width: 34rem;
+  margin: 0 auto 2rem;
+  line-height: 1.65;
+}
+
+.lp-hero-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.lp-btn-glow {
+  box-shadow: 0 4px 24px color-mix(in srgb, var(--primary) 30%, transparent);
+  transition: box-shadow 0.25s ease, transform 0.2s ease;
+}
+
+.lp-btn-glow:hover {
+  box-shadow: 0 6px 32px color-mix(in srgb, var(--primary) 45%, transparent);
+  transform: translateY(-1px);
+}
+
+/* Section headers */
+
+.lp-section-badge {
+  display: inline-block;
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+  color: var(--primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.85rem;
+  border-radius: 999px;
+  margin-bottom: 1rem;
+}
+
+.lp-section-title {
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  margin-bottom: 0.5rem;
+}
+
+.lp-section-sub {
+  color: var(--muted-foreground);
+  font-size: 1.05rem;
+  margin-bottom: 2.5rem;
+}
+
+/* Features */
+
+.lp-features {
+  padding: 5rem 0;
+  text-align: center;
+}
+
+.lp-features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: 1.5rem;
+}
+
+.lp-feature-card {
+  background: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 2rem 1.5rem;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.lp-feature-card.lp-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.lp-feature-card:hover {
+  border-color: color-mix(in srgb, var(--primary) 40%, transparent);
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--primary) 10%, transparent);
+}
+
+.lp-feature-icon {
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  border-radius: 0.75rem;
+  color: var(--primary);
+}
+
+.lp-feature-card h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.lp-feature-card p {
+  color: var(--muted-foreground);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+/* How it works */
+
+.lp-how {
+  padding: 5rem 0;
+  text-align: center;
+  background: color-mix(in srgb, var(--muted) 40%, transparent);
+}
+
+.lp-steps {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0;
+  max-width: 56rem;
+  margin: 0 auto;
+}
+
+.lp-step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 0 1rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.lp-step.lp-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.lp-step-number {
+  width: 3.5rem;
+  height: 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-size: 1.3rem;
+  font-weight: 800;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--primary) 30%, transparent);
+}
+
+.lp-step-connector {
+  width: 4rem;
+  height: 2px;
+  background: linear-gradient(90deg, var(--border), var(--primary), var(--border));
+  margin-top: 1.75rem;
+  flex-shrink: 0;
+  opacity: 0.5;
+}
+
+.lp-step-content h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+}
+
+.lp-step-content p {
+  color: var(--muted-foreground);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+/* CTA */
+
+.lp-cta {
+  padding: 4rem 0;
+}
+
+.lp-cta-inner {
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  padding: 4rem 2rem;
+  border-radius: 1.5rem;
+  background: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--border);
+}
+
+.lp-cta-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--primary) 12%, transparent) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.lp-cta-inner h2 {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  position: relative;
+}
+
+.lp-cta-inner p {
+  color: var(--muted-foreground);
+  margin-bottom: 2rem;
+  font-size: 1.05rem;
+  position: relative;
+}
+
+.lp-cta-inner a {
+  position: relative;
+}
+
+/* Footer */
+
+.lp-footer {
+  padding: 2rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.lp-footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.lp-footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.lp-footer-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.lp-footer-links a {
+  font-size: 0.85rem;
+  color: var(--muted-foreground);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.lp-footer-links a:hover {
+  color: var(--primary);
+}
+
+.lp-footer-copy {
+  font-size: 0.78rem;
+  color: var(--muted-foreground);
+  opacity: 0.7;
+}
+
+/* Responsive for landing */
+
+@media (max-width: 860px) {
+  .lp-steps {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .lp-step-connector {
+    width: 2px;
+    height: 2rem;
+    margin: 0;
+  }
+
+  .lp-footer-inner {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .lp-hero {
+    padding: 3rem 0 2.5rem;
+  }
+}
+
+/* --- Preloader (index.html, login.html, signup.html) ---
+   Um bloco só pros dois temas: usa var(--primary)/var(--background)/
+   var(--muted-foreground), que já mudam sozinhas com html.dark - só os
+   filtros do logo apagado e do brilho (abaixo) precisam de um valor
+   diferente por tema, então esses dois ganham override em html.dark. */
+
+.tt-preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 34px;
+  background: var(--background);
+  opacity: 1;
+  transition: opacity 0.45s ease, visibility 0.45s ease;
+}
+
+/* js/preloader.js adiciona esta classe quando a página termina de carregar. */
+.tt-preloader.is-done {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.tt-preloader::before {
+  content: "";
+  position: absolute;
+  top: -22%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 620px;
+  height: 620px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--primary) 14%, transparent) 0%, transparent 68%);
+  pointer-events: none;
+}
+
+.tt-face {
+  position: relative;
+  width: 216px;
+  height: 216px;
+  animation: tt-pop 3.24s ease-out infinite;
+}
+
+.tt-face img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* logo apagado, ao fundo */
+.tt-face .tt-base {
+  filter: grayscale(1) contrast(0.4) opacity(0.24);
+}
+
+html.dark .tt-face .tt-base {
+  filter: grayscale(1) brightness(0.55) opacity(0.3);
+}
+
+/* recorte que "enche" o logo de baixo para cima - a altura do
+   preenchimento é controlada pelo JS (js/preloader.js), a partir do
+   carregamento real da página, não por uma animação de tempo fixo. */
+.tt-fill {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(100% 0 0 0);
+  transition: clip-path 0.3s ease;
+}
+
+/* reflexo diagonal, só dentro da parte já preenchida */
+.tt-face .tt-shine {
+  filter: brightness(1.9) saturate(0.7);
+  -webkit-mask-image: linear-gradient(100deg, transparent 38%, #000 50%, transparent 62%);
+  mask-image: linear-gradient(100deg, transparent 38%, #000 50%, transparent 62%);
+  -webkit-mask-size: 300% 100%;
+  mask-size: 300% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  animation: tt-sweep 1.9s linear infinite;
+}
+
+html.dark .tt-face .tt-shine {
+  filter: brightness(2.2) saturate(0.6);
+}
+
+.tt-meter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 260px;
+}
+
+.tt-track {
+  width: 100%;
+  height: 4px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 18%, transparent);
+  overflow: hidden;
+}
+
+/* largura da barra também vem do JS (mesmo valor real usado no .tt-fill
+   acima), via transform: scaleX() atualizado a cada recurso carregado. */
+.tt-bar {
+  height: 100%;
+  width: 100%;
+  border-radius: 999px;
+  background: var(--primary);
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.tt-labels {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.tt-labels span:first-child {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+.tt-pct {
+  font-size: 1.35rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  color: var(--primary);
+}
+
+@keyframes tt-sweep {
+  0% { -webkit-mask-position: -120% 0; mask-position: -120% 0; }
+  100% { -webkit-mask-position: 220% 0; mask-position: 220% 0; }
+}
+
+@keyframes tt-pop {
+  0%, 82% { transform: scale(1); }
+  90% { transform: scale(1.07); }
+  100% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* .tt-fill/.tt-bar não têm animação de loop (são controlados pelo
+     JS a partir do carregamento real) - só as decorações puramente
+     estéticas (baloiço do logo, brilho) somem aqui. */
+  .tt-face,
+  .tt-face .tt-shine {
+    animation: none;
+  }
+  .tt-face .tt-shine {
+    display: none;
+  }
+}
+
+/* --- Modal de confirmação ---
+   Substitui confirm()/prompt()/alert() nativos do navegador para
+   ações destrutivas (excluir conversa, excluir conta) - ver
+   js/modal.js. Criado inteiramente via JS (sem markup em cada HTML),
+   então este bloco é o único lugar a mexer no visual. */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0);
+  opacity: 0;
+  transition: opacity 0.2s ease, background 0.2s ease;
+}
+
+.modal-overlay.modal-open {
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 1;
+}
+
+.modal {
+  width: 100%;
+  max-width: 26rem;
+  background: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  transform: scale(0.94) translateY(8px);
+  opacity: 0;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.modal-overlay.modal-open .modal {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+.modal h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.modal-message {
+  margin: 0;
+  color: var(--muted-foreground);
+}
+
+.modal-input {
+  border: 1px solid var(--input);
+  border-radius: 0.5rem;
+  padding: 0.55rem 0.75rem;
+  background: var(--card);
+  color: var(--card-foreground);
+}
+
+.modal-error {
+  margin: 0;
+  color: var(--destructive);
+  font-size: 0.85rem;
+  text-align: center;
+  background: color-mix(in srgb, var(--destructive) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--destructive) 20%, transparent);
+  border-radius: 0.5rem;
+  padding: 0.6rem;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+@media (max-width: 480px) {
+  .modal-actions {
+    flex-direction: column-reverse;
+  }
+  .modal-actions button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .tt-face {
+    width: 168px;
+    height: 168px;
+  }
+  .tt-meter {
+    width: 210px;
+  }
+}
+
+/* --- Personality picker (dropdown "Nome ⌄" no topbar, escolhe a
+   personalidade da IA por conversa) --- */
+
+.personality-picker {
+  position: relative;
+}
+
+.personality-picker-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--foreground);
+  border-radius: 999px;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  max-width: 12.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* O rótulo é a parte que encolhe se faltar espaço - o chevron continua
+   sempre visível, senão o pill não pareceria clicável. */
+.personality-picker-trigger > span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.personality-picker-trigger:hover {
+  background: var(--accent);
+}
+
+.personality-picker-chevron {
+  display: inline-flex;
+  color: var(--muted-foreground);
+  transition: transform 0.15s ease;
+}
+
+.personality-picker-trigger[aria-expanded="true"] .personality-picker-chevron {
+  transform: rotate(180deg);
+}
+
+.personality-picker-menu {
+  position: absolute;
+  /* Abre para CIMA: o seletor mora dentro do campo de mensagem, que fica
+     na parte de baixo da tela - para baixo o menu sairia da viewport. */
+  bottom: calc(100% + 0.5rem);
+  right: 0;
+  z-index: 20;
+  min-width: 16rem;
+  max-width: 20rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  background: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 0.4rem;
+  overflow-y: auto;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(6px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.personality-picker-menu.open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* Cada seção do menu (personalidade em cima, esforço embaixo). O gap do
+   .personality-picker-menu passa a separar os GRUPOS, então o
+   espaçamento entre as opções vem daqui. */
+.personality-picker-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.personality-picker-group-divided {
+  border-top: 1px solid var(--border);
+  margin-top: 0.25rem;
+  padding-top: 0.35rem;
+}
+
+/* Mesmo tratamento do .sidebar-label (rótulo pequeno em maiúsculas). */
+.personality-picker-group-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted-foreground);
+  padding: 0.1rem 0.7rem 0.2rem;
+}
+
+.personality-picker-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  border-radius: 0.5rem;
+  padding: 0.55rem 0.7rem;
+}
+
+.personality-picker-option:hover {
+  background: var(--accent);
+}
+
+.personality-picker-option-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.personality-picker-option-name {
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+
+.personality-picker-option-subtitle {
+  font-size: 0.78rem;
+  color: var(--muted-foreground);
+}
+
+.personality-picker-check {
+  flex-shrink: 0;
+  display: inline-flex;
+  color: var(--primary);
+  visibility: hidden;
+}
+
+.personality-picker-option.selected .personality-picker-check {
+  visibility: visible;
+}
+
+@media (max-width: 480px) {
+  .personality-picker-menu {
+    min-width: 14rem;
+    right: -0.5rem;
+  }
+}

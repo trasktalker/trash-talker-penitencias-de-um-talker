@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Trash Talker</title>
+  <link rel="icon" href="/logo-talker.svg" />
+  <link rel="stylesheet" href="/css/app.css" />
+  <script src="/js/ui.js" defer></script>
+  <script src="/js/theme.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Pular para o conteúdo</a>
+  <div class="app-shell">
+    <aside class="sidebar" id="app-sidebar" aria-label="Navegação principal">
+      <div class="sidebar-header">
+        <a href="/dashboard" class="brand">
+          <img class="brand-icon" src="/logo-talker.svg" alt="" />
+          <span class="brand-name">Trash Talker</span>
+        </a>
+        <button type="button" class="sidebar-toggle" title="Ocultar barra lateral">
+          <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2.5" y="3.5" width="15" height="13" rx="2.5"></rect>
+            <line x1="7.5" y1="3.5" x2="7.5" y2="16.5"></line>
+          </svg>
+        </button>
+      </div>
+
+      <form class="sidebar-new-chat">
+        <button type="submit">
+          <svg class="icon" viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"></line><line x1="4" y1="10" x2="16" y2="10"></line></svg>
+          <span class="sidebar-text">Nova conversa</span>
+        </button>
+      </form>
+
+      <div class="sidebar-section sidebar-chats">
+        <div class="sidebar-label">Conversas recentes</div>
+        <ul class="chat-list"></ul>
+      </div>
+
+      <div class="sidebar-section sidebar-secondary" role="navigation" aria-label="Conta e configurações">
+        <a href="/dashboard/settings">
+          <svg class="icon" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="5"></circle><circle cx="10" cy="10" r="1.7"></circle><line x1="10" y1="2.4" x2="10" y2="4.3" stroke-width="2.4"></line><line x1="10" y1="15.7" x2="10" y2="17.6" stroke-width="2.4"></line><line x1="3.5" y1="6.2" x2="5.2" y2="7.2" stroke-width="2.4"></line><line x1="14.8" y1="12.8" x2="16.5" y2="13.8" stroke-width="2.4"></line><line x1="3.5" y1="13.8" x2="5.2" y2="12.8" stroke-width="2.4"></line><line x1="14.8" y1="7.2" x2="16.5" y2="6.2" stroke-width="2.4"></line></svg>
+          <span class="sidebar-text">Configurações</span>
+        </a>
+      </div>
+
+      <div class="sidebar-footer">
+        <a href="/dashboard/account" class="user-chip">
+          <span class="avatar-slot"></span>
+          <span class="user-name"></span>
+        </a>
+        <form>
+          <button type="submit" class="logout-btn" title="Sair">
+            <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3.5H5a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h3"></path><line x1="8" y1="10" x2="16.5" y2="10"></line><polyline points="13.3 6.8 16.5 10 13.3 13.2"></polyline></svg>
+          </button>
+        </form>
+      </div>
+    </aside>
+
+    <div class="app-main">
+      <header class="topbar">
+        <button class="sidebar-toggle" title="Mostrar barra lateral">
+          <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2.5" y="3.5" width="15" height="13" rx="2.5"></rect>
+            <line x1="7.5" y1="3.5" x2="7.5" y2="16.5"></line>
+          </svg>
+        </button>
+        <p class="topbar-title">Configurações</p>
+      </header>
+
+      <main class="app-content" id="main-content" tabindex="-1">
+        <div class="settings-page">
+          <h1>Configurações</h1>
+          <p class="muted">Escolha o tema, altere sua senha e cuide dos seus dados.</p>
+
+          <div class="card">
+            <h2>Sua conta</h2>
+            <p class="muted">Informações da sua conta no Trash Talker.</p>
+            <div class="field-row-2 account-info-box">
+              <div class="field">
+                <label>Email</label>
+                <p id="account-info-email">—</p>
+              </div>
+              <div class="field">
+                <label>Conta criada em</label>
+                <p id="account-info-created-at">—</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Aparência</h2>
+            <p class="muted">Personalize as cores e o tema visual da aplicação.</p>
+            <!-- js/theme.js já cuida destes botões em qualquer página. -->
+            <div class="theme-buttons">
+              <button type="button" data-theme-btn="light">
+                <svg class="icon" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="3.4"></circle><line x1="10" y1="2.3" x2="10" y2="4.2"></line><line x1="10" y1="15.8" x2="10" y2="17.7"></line><line x1="2.3" y1="10" x2="4.2" y2="10"></line><line x1="15.8" y1="10" x2="17.7" y2="10"></line><line x1="4.6" y1="4.6" x2="5.9" y2="5.9"></line><line x1="14.1" y1="14.1" x2="15.4" y2="15.4"></line><line x1="15.4" y1="4.6" x2="14.1" y2="5.9"></line><line x1="5.9" y1="14.1" x2="4.6" y2="15.4"></line></svg>
+                Claro
+              </button>
+              <button type="button" data-theme-btn="dark">
+                <svg class="icon" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 12.3A7 7 0 1 1 8.7 3.6a5.4 5.4 0 0 0 7.8 8.7Z"></path></svg>
+                Escuro
+              </button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Alterar senha</h2>
+            <p class="muted">Atualize a senha usada para entrar na sua conta.</p>
+
+            <div id="password-error" class="banner banner-error" hidden></div>
+            <div id="password-success" class="banner banner-success" hidden>
+              Senha alterada com sucesso.
+            </div>
+
+            <form id="password-form" class="auth-form">
+              <div class="field">
+                <label for="current-password">Senha atual</label>
+                <input id="current-password" name="currentPassword" type="password" required minlength="8" autocomplete="current-password" />
+              </div>
+
+              <div class="field-row-2 password-fields">
+                <div class="field">
+                  <label for="new-password">Nova senha</label>
+                  <input id="new-password" name="newPassword" type="password" required minlength="8" autocomplete="new-password" />
+                </div>
+                <div class="field">
+                  <label for="confirm-new-password">Confirmar nova senha</label>
+                  <input id="confirm-new-password" type="password" required minlength="8" autocomplete="new-password" />
+                </div>
+                <ul id="new-password-requirements" class="password-requirements" hidden></ul>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn-primary">Salvar Nova senha</button>
+              </div>
+            </form>
+          </div>
+
+          <section class="card" id="two-factor-card" aria-labelledby="two-factor-title">
+            <h2 id="two-factor-title">Autenticação em dois fatores</h2>
+            <p class="muted">Proteja sua conta com um código do Google Authenticator ao entrar.</p>
+            <p id="two-factor-status" role="status">Consultando proteção da conta...</p>
+            <div id="two-factor-error" class="banner banner-error" role="alert" hidden></div>
+            <button type="button" id="two-factor-retry" class="btn-outline" hidden>Tentar novamente</button>
+
+            <div id="two-factor-actions" class="card-actions" hidden>
+              <button type="button" id="two-factor-start" class="btn-primary">Ativar autenticação em dois fatores</button>
+              <button type="button" id="two-factor-regenerate" class="btn-outline" hidden>Gerar novos códigos de recuperação</button>
+              <button type="button" id="two-factor-disable" class="btn-destructive" hidden>Desativar autenticação em dois fatores</button>
+            </div>
+
+            <form id="two-factor-password-form" class="auth-form two-factor-panel" hidden>
+              <h3 id="two-factor-action-title" tabindex="-1">Confirme sua senha</h3>
+              <p id="two-factor-action-help" class="muted"></p>
+              <div class="field">
+                <label for="two-factor-password">Senha atual</label>
+                <input id="two-factor-password" type="password" autocomplete="current-password" maxlength="1024" required />
+              </div>
+              <div class="field" id="two-factor-reauth-field" hidden>
+                <label for="two-factor-reauth-code">Código do autenticador ou de recuperação</label>
+                <input id="two-factor-reauth-code" type="text" autocomplete="one-time-code" maxlength="64" />
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn-primary" id="two-factor-action-submit">Continuar</button>
+                <button type="button" class="btn-outline" data-two-factor-cancel>Cancelar</button>
+              </div>
+            </form>
+
+            <div id="two-factor-enrollment" class="two-factor-panel" hidden>
+              <ol>
+                <li>No Google Authenticator, toque em + e escolha Ler QR code.</li>
+                <li>Escaneie o QR Code abaixo ou escolha Inserir chave de configuração e use a chave manual, com base no tempo.</li>
+                <li>Digite o código de 6 dígitos para concluir a ativação.</li>
+              </ol>
+              <img id="two-factor-qr" class="two-factor-qr" alt="QR Code para adicionar sua conta ao Google Authenticator" width="240" height="240" />
+              <p>Chave manual: <code id="two-factor-manual-key" class="two-factor-key"></code></p>
+              <p class="muted">Esta configuração expira em 10 minutos. Mantenha a chave e o QR Code em segredo.</p>
+              <form id="two-factor-confirm-form" class="auth-form">
+                <div class="field">
+                  <label for="two-factor-confirm-code">Código do Google Authenticator</label>
+                  <input id="two-factor-confirm-code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" minlength="6" maxlength="6" required />
+                </div>
+                <div class="form-actions">
+                  <button type="submit" class="btn-primary">Confirmar ativação</button>
+                  <button type="button" class="btn-outline" data-two-factor-cancel>Cancelar</button>
+                </div>
+              </form>
+            </div>
+
+            <div id="two-factor-recovery" class="two-factor-panel" hidden>
+              <h3 id="two-factor-recovery-title" tabindex="-1">Guarde seus códigos de recuperação</h3>
+              <p>Estes oito códigos são mostrados apenas agora. Guarde-os em um local seguro. Cada um permite entrar uma vez se você perder acesso ao autenticador.</p>
+              <ul id="two-factor-recovery-list" class="two-factor-recovery-list"></ul>
+              <p class="muted">Redefinir a senha por e-mail não remove esta proteção. Sem o autenticador e sem estes códigos, você perde o acesso à conta.</p>
+              <div class="card-actions">
+                <button type="button" class="btn-outline" id="two-factor-download">Baixar códigos</button>
+                <button type="button" class="btn-primary" id="two-factor-done">Já guardei meus códigos</button>
+              </div>
+            </div>
+          </section>
+
+          <div class="card">
+            <h2>Privacidade e dados</h2>
+            <p class="muted">Consulte nossos documentos legais ou exporte uma cópia dos seus dados.</p>
+            <div class="card-actions">
+              <a href="/privacy" target="_blank" rel="noopener" class="btn-outline">Política de Privacidade</a>
+              <a href="/terms" target="_blank" rel="noopener" class="btn-outline">Termos de Uso</a>
+              <a href="/cookies" target="_blank" rel="noopener" class="btn-outline">Política de Cookies</a>
+              <button type="button" id="export-data-btn" class="btn-outline">Exportar meus dados</button>
+            </div>
+          </div>
+
+          <div class="account-delete-action">
+            <p id="delete-account-help" class="muted">Excluir sua conta apaga seu perfil e todas as conversas. Essa ação não pode ser desfeita.</p>
+            <button type="button" id="delete-account-btn" class="btn-destructive" aria-describedby="delete-account-help">
+              Excluir conta
+            </button>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/modal.js"></script>
+  <script src="/js/avatar.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/layout.js"></script>
+  <script src="/js/settings.js"></script>
+  <script src="/js/two-factor.js"></script>
+</body>
+</html>

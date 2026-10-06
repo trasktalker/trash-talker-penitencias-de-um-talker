@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Trash Talker - Entrar</title>
+  <link rel="icon" href="/logo-talker.svg" />
+  <link rel="stylesheet" href="/css/app.css" />
+  <script src="/js/ui.js" defer></script>
+  <script src="/js/theme.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Pular para o conteúdo</a>
+  <main class="auth-page" id="main-content" tabindex="-1">
+    <aside class="auth-aside" aria-hidden="true">
+      <img class="auth-illustration" src="/images/auth-login-icon.svg" alt="" width="600" height="600" />
+    </aside>
+    <div class="auth-card">
+      <a class="auth-brand" href="/" aria-label="Trash Talker — início"><img src="/logo-talker.svg" alt="" width="56" height="56" /></a>
+      <h1 class="auth-title">Trash Talker</h1>
+      <p class="auth-subtitle">Entre na sua conta</p>
+
+      <!-- js/login.js intercepta o envio e chama POST /api/login. -->
+      <form class="auth-form" id="login-form">
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="m@example.com" required />
+        </div>
+        <div class="field">
+          <div class="field-row">
+            <label for="password">Senha</label>
+            <a href="/forgot-password" class="link-muted">Esqueceu a senha?</a>
+          </div>
+          <input id="password" name="password" type="password" required />
+        </div>
+
+        <div id="login-error" class="field-error" role="alert" hidden></div>
+
+        <button type="submit" class="btn-primary btn-block">Entrar</button>
+
+        <p class="auth-footer-text">
+          Não tem uma conta? <a href="/signup">Cadastre-se</a>
+        </p>
+      </form>
+      <form class="auth-form" id="login-2fa-form" hidden>
+        <p id="login-2fa-help">Digite o código de 6 dígitos do Google Authenticator.</p>
+        <div class="field">
+          <label for="login-2fa-code" id="login-2fa-label">Código do autenticador</label>
+          <input id="login-2fa-code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" minlength="6" maxlength="6" aria-describedby="login-2fa-help" required />
+        </div>
+        <div id="login-2fa-error" class="field-error" role="alert" hidden></div>
+        <button type="submit" class="btn-primary btn-block">Verificar e entrar</button>
+        <button type="button" class="btn-outline btn-block" id="login-use-recovery">Usar código de recuperação</button>
+        <button type="button" class="btn-ghost btn-block" id="login-2fa-back">Voltar ao login</button>
+      </form>
+    </div>
+    <p class="auth-legal">
+      <a href="/terms">Termos de Uso</a> ·
+      <a href="/privacy">Política de Privacidade</a> ·
+      <a href="/cookies">Cookies</a>
+    </p>
+  </main>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/login.js"></script>
+</body>
+</html>
