@@ -11,9 +11,9 @@ usando apenas:
 - **Back-end**: Python (Flask), com SQL cru via `psycopg2` (sem ORM),
   falando com o mesmo banco PostgreSQL (Neon ou outro).
 
-O projeto TypeScript original **não foi apagado** — ele continua na raiz
-do repositório, fora desta pasta, para você comparar lado a lado enquanto
-aprende a nova versão.
+O projeto TypeScript original não faz parte deste repositório. As
+referências a arquivos como `src/routes/*.ts` ou `*.ejs` nesta
+documentação e nos comentários do código apontam para aquela versão.
 
 ---
 
@@ -30,7 +30,8 @@ Antes de converter, vale entender exatamente o que existia:
   servidor** (Express, EJS, SQL cru via `pg`, autenticação via
   `better-auth`) e transformar os templates EJS em HTML estático puro.
 - **Rotas / páginas**: `/`, `/login`, `/signup`, `/forgot-password`,
-  `/reset-password`, `/privacy`, `/terms` (públicas) e
+  `/reset-password`, `/privacy`, `/terms` (públicas; hoje também
+  `/cookies`) e
   `/dashboard`, `/dashboard/chat/:id`, `/dashboard/account`,
   `/dashboard/settings`, `/dashboard/information` (exigem login).
 - **Autenticação**: e-mail/senha via `better-auth`, sessão por cookie.
@@ -61,15 +62,15 @@ A troca foi:
    usuário, mensagens de uma conversa) passou a ser buscado do
    backend via `fetch()`, depois de a página já estar carregada, e
    desenhado no DOM por JavaScript. Esse é o papel principal de
-   `frontend/js/layout.js` (sidebar/usuário) e `frontend/js/chat.js`
+   `public/js/layout.js` (sidebar/usuário) e `public/js/chat.js`
    (mensagens).
 3. Os `<form method="post">` que antes causavam um recarregamento de
    página completo (padrão de app "old school" renderizado no
    servidor) foram trocados por chamadas `fetch()` que conversam com
    uma **API JSON** em Python (pasta `backend/`). A navegação entre
    páginas continua sendo "de verdade" (não é uma SPA com roteamento
-   por JavaScript) - continuam existindo 12 arquivos `.html`
-   separados, um por rota, exatamente como no original.
+   por JavaScript) - existe um arquivo `.html` separado por rota,
+   como no original.
 4. **Autenticação**: `better-auth` foi substituído por uma
    implementação própria e simples em `backend/auth.py` (sessão por
    cookie + hash de senha com `werkzeug.security`). Ver o aviso na
@@ -88,8 +89,9 @@ A troca foi:
 2. Autenticação (`auth.py`) - é a peça mais sensível (segurança).
 3. Endpoints da API (`routes/auth_api.py`, `routes/chats_api.py`),
    mapeando 1:1 cada rota que existia em `src/routes/*.ts`.
-4. `app.py` juntando tudo e servindo os arquivos estáticos do frontend.
-5. CSS copiado sem nenhuma alteração (`frontend/css/app.css`).
+4. `app.py` juntando tudo e servindo os arquivos estáticos do frontend
+   (hoje a montagem fica em `backend/factory.py`).
+5. CSS copiado do original (`public/css/app.css`), que depois evoluiu.
 6. JavaScript utilitário compartilhado (`api.js`, `avatar.js`,
    `theme.js`).
 7. Uma página HTML por vez, com seu JS específico, comparando
@@ -101,62 +103,65 @@ A troca foi:
 
 ```
 python-app/
+├── app.py                    # ponto de entrada: `app = create_app()` (python app.py / Vercel)
+├── requirements.txt
+├── .env.example              # modelo do .env (copie e preencha)
+├── vercel.json               # deploy: rewrites das páginas, cache, maxDuration
 ├── backend/
-│   ├── app.py              # cria o Flask app, registra rotas, serve o frontend
-│   ├── db.py                # pool de conexões Postgres + helpers de query
-│   ├── auth.py               # sessão por cookie, hash de senha, tokens de reset
-│   ├── ai.py                 # integração com o Gemini (monta o prompt e chama a API)
-│   ├── personalities.py      # personas de IA selecionáveis (TrashTalker, MathIAs) + system prompts
+│   ├── factory.py            # create_app(): registra as rotas e serve o frontend (page_routes)
+│   ├── db.py                 # pool de conexões Postgres + helpers de query
+│   ├── auth.py               # sessão por cookie, hash/política de senha, tokens de reset, aceite dos termos
+│   ├── two_factor.py         # 2FA (TOTP, códigos de recuperação, limite de tentativas)
+│   ├── ai.py                 # Gemini: resposta do chat (níveis de esforço) e texto -> fala (TTS)
+│   ├── personalities.py      # personas (TrashTalker, MathIAs), system prompts e "preguiça" do MathIAs
 │   ├── email_utils.py        # envio do e-mail de redefinição via SMTP
 │   ├── avatars.py            # lista fixa dos avatares ilustrados
-│   ├── routes/
-│   │   ├── auth_api.py       # /api/login, /api/signup, /api/logout, /api/me, ...
-│   │   └── chats_api.py      # /api/dashboard, /api/chats, /api/account
-│   ├── schema.sql            # esquema do banco (rode uma vez no Postgres)
-│   ├── requirements.txt
-│   └── .env.example
-└── frontend/
-    ├── index.html            # landing page ("/")
-    ├── login.html
-    ├── signup.html
-    ├── forgot-password.html
-    ├── reset-password.html
-    ├── privacy.html
-    ├── terms.html
-    ├── dashboard.html        # tela de boas-vindas do dashboard
-    ├── chat.html              # uma conversa (id vem da URL)
-    ├── account.html
-    ├── settings.html
-    ├── css/app.css            # idêntico ao original, sem alterações
-    ├── js/
-    │   ├── api.js              # fetch() com tratamento de erro/loading
-    │   ├── avatar.js            # desenha avatar (foto/ilustrado/iniciais)
-    │   ├── theme.js             # tema claro/escuro
-    │   ├── auth.js              # validação de senha + esqueci senha/redefinir
-    │   ├── login.js / signup.js
-    │   ├── landing.js            # landing page única, adapta nav/CTA à sessão
-    │   ├── layout.js             # sidebar + guarda de autenticação
-    │   ├── chat.js                # composer + mensagens
-    │   └── account.js             # formulário de conta
-    ├── avatars/*.svg
-    └── logo-talker.svg
-
-tests/                        # testes automatizados (pytest)
-├── conftest.py               # banco de teste isolado + fixtures
-├── test_auth_api.py
-├── test_chats_api.py
-└── test_account_api.py
-
-features/                     # especificações de comportamento (Behave, Gherkin pt-BR)
-├── environment.py
-├── autenticacao.feature
-├── conversas.feature
-├── conta.feature
-└── steps/
-
-docs/
-├── processo.md               # como o projeto é desenvolvido + decisões técnicas
-└── testes.md                 # como rodar e escrever testes
+│   ├── schema.sql            # esquema do banco (idempotente, rodado à mão)
+│   └── routes/
+│       ├── auth_api.py       # /api/login, /api/signup, /api/logout, /api/me, esqueci/redefinir senha
+│       ├── chats_api.py      # /api/dashboard, /api/chats/..., /api/tts, /api/account/...
+│       └── two_factor_api.py # /api/login/2fa, /api/2fa/...
+├── public/                   # frontend estático (servido pelo Flask ou pela CDN da Vercel)
+│   ├── index.html            # landing page ("/")
+│   ├── login.html, signup.html, forgot-password.html, reset-password.html
+│   ├── privacy.html, terms.html, cookies.html
+│   ├── dashboard.html        # tela de boas-vindas (primeira mensagem cria a conversa)
+│   ├── chat.html             # uma conversa (id vem da URL)
+│   ├── account.html, settings.html
+│   ├── css/app.css
+│   ├── js/
+│   │   ├── api.js            # fetch() com tratamento de erro + GET /api/dashboard compartilhado
+│   │   ├── ui.js             # mensagens de status e eventos internos (emitTT)
+│   │   ├── theme.js          # tema claro/escuro
+│   │   ├── modal.js          # diálogo acessível (confirmar, renomear, aceite)
+│   │   ├── avatar.js         # desenha avatar (foto/ilustrado/iniciais)
+│   │   ├── auth.js           # validação de senha + esqueci senha/redefinir
+│   │   ├── login.js / signup.js
+│   │   ├── landing.js        # landing page única, adapta nav/CTA à sessão
+│   │   ├── layout.js         # sidebar + guarda de autenticação + janela de aceite
+│   │   ├── chat.js           # composer, mensagens, parar/desfazer envio
+│   │   ├── personality-picker.js  # seletor de personalidade e esforço
+│   │   ├── voice.js          # ditado por voz e botão "ouvir" (TTS)
+│   │   ├── account.js        # formulário de perfil
+│   │   ├── settings.js       # senha, exportação, exclusão de conta
+│   │   └── two-factor.js     # telas do 2FA nas Configurações
+│   ├── avatars/*.svg, images/*.svg
+│   └── logo-talker.svg, mathias-mark.svg, conversation-art*.svg
+├── tests/                    # testes de API (pytest)
+│   ├── conftest.py           # banco de teste isolado + fixtures
+│   ├── test_auth_api.py
+│   ├── test_chats_api.py
+│   ├── test_account_api.py
+│   └── test_two_factor_api.py
+├── features/                 # especificações de comportamento (Behave, Gherkin pt-BR)
+│   ├── environment.py
+│   ├── autenticacao.feature, conversas.feature, conta.feature
+│   └── steps/
+└── docs/
+    ├── processo.md           # como o projeto é desenvolvido + decisões técnicas e riscos
+    ├── testes.md             # como rodar e escrever testes
+    ├── 2fa.md                # Google Authenticator: configuração e contratos
+    └── proposta-do-site.md   # proposta do produto
 ```
 
 ---
@@ -168,13 +173,15 @@ docs/
 - Python 3.10+
 - Um banco PostgreSQL (local, ou o mesmo Neon do projeto original)
 
+Todos os comandos abaixo rodam a partir da pasta `python-app/`.
+
 ### Passo 1 - Ambiente virtual e dependências
 
 ```bash
-cd python-app/backend
+cd python-app
 python3 -m venv venv
 source venv/bin/activate        # Windows: venv\Scripts\activate
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
 ### Passo 2 - Banco de dados
@@ -182,8 +189,11 @@ pip install -r requirements.txt
 Crie as tabelas rodando o schema fornecido:
 
 ```bash
-psql "$DATABASE_URL" -f schema.sql
+psql "$DATABASE_URL" -f backend/schema.sql
 ```
+
+O arquivo é idempotente: rode de novo sempre que ele mudar (novas
+colunas/tabelas), sem perder dados.
 
 > ⚠️ **Nunca cole uma connection string real neste arquivo.** Ela contém
 > a senha do banco, e o repositório é público. Use sempre a variável de
@@ -198,14 +208,17 @@ psql "$DATABASE_URL" -f schema.sql
 
 ```bash
 cp .env.example .env
-# edite o .env e preencha DATABASE_URL
+# edite o .env: DATABASE_URL é obrigatória; GEMINI_API_KEY para o chat;
+# TOTP_ENCRYPTION_KEY para o 2FA; SMTP_* para o e-mail de redefinição
 ```
+
+O que cada variável faz está comentado no próprio `.env.example`.
 
 ### Passo 4 - Rodar o servidor
 
 ```bash
 python app.py
-.\venv\Scripts\python.exe app.py
+# Windows, sem ativar o venv: .\venv\Scripts\python.exe app.py
 ```
 
 Acesse [http://localhost:5000](http://localhost:5000). O Flask serve o
@@ -223,7 +236,7 @@ python -m pip install pytest behave
 createdb trashtalker_test
 export TEST_DATABASE_URL="postgresql://localhost/trashtalker_test"
 
-python -m pytest      # 64 testes de API
+python -m pytest      # 108 testes de API (inclui 2FA)
 python -m behave      # 33 cenários de comportamento (Gherkin pt-BR)
 ```
 
@@ -246,8 +259,10 @@ Detalhes, incluindo Windows/PowerShell e como escrever novos testes:
   com cookie `SameSite=Lax` (em vez de formulários HTML tradicionais
   entre origens), o risco principal de CSRF (um site malicioso
   enviando um POST em nome do usuário) já é bem reduzido, mas não é uma
-  proteção formal equivalente. Se for expor este projeto publicamente,
-  vale adicionar um token CSRF nas rotas que alteram dados.
+  proteção formal equivalente. Só as rotas de 2FA (`/api/login/2fa`,
+  `/api/2fa/*`) conferem a origem da requisição (`Origin` e
+  `Sec-Fetch-Site`). Se for expor este projeto publicamente, vale
+  adicionar um token CSRF nas demais rotas que alteram dados.
 - **E-mail de redefinição de senha é enviado de verdade**, via SMTP
   (`backend/email_utils.py`), desde que `SMTP_HOST`, `SMTP_USER` e
   `SMTP_PASSWORD` estejam preenchidos no `.env`. Se a configuração
@@ -287,12 +302,26 @@ servidor, quem faz o trabalho é `POST /api/chats/<id>/cancel` - ele apaga
 a mensagem que estava sendo respondida, e `send_message` confere se ela
 ainda existe antes de gravar a resposta.
 
+Também já existem:
+
+- **Autenticação em dois fatores** opcional (Google Authenticator), com
+  códigos de recuperação e limite de tentativas próprio - ver
+  [docs/2fa.md](docs/2fa.md).
+- **Aceite dos termos versionado** (`CONSENT_VERSION` em `auth.py`):
+  cadastro exige as duas confirmações (18+/termos e envio à IA), e quem
+  ainda não aceitou a versão atual não conversa até aceitar (403 com
+  `needsConsent`).
+- **Botão "ouvir"** em cada resposta: `POST /api/tts` gera a fala com o
+  Gemini TTS, com uma voz por personalidade; se falhar, o navegador lê
+  com a voz dele (`public/js/voice.js`).
+- **Exportação dos dados** da conta em JSON (`GET /api/account/export`).
+
 O que ainda falta:
 
 1. **CSRF token e rate limiting no login/signup/forgot-password**,
    especialmente se o projeto for ficar acessível na internet (ver
-   aviso na seção 5) - o limite de envio hoje cobre só as mensagens do
-   chat, não as tentativas de autenticação.
+   aviso na seção 5). Hoje não há limite de tentativas de senha no login
+   nem de envio de mensagens; só as verificações do 2FA têm limite.
 2. **Limitar o histórico enviado à IA.** `ai.py` manda a conversa
    inteira para o Gemini a cada mensagem; em conversas muito longas isso
    aumenta custo/latência e pode estourar o limite de tokens do

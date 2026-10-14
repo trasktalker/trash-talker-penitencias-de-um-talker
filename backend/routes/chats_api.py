@@ -68,7 +68,7 @@ def _consent_required_response():
 def dashboard():
     """
     Dados usados em TODA página do dashboard: usuário logado + lista de
-    conversas (para montar a sidebar). Chamado por frontend/js/layout.js
+    conversas (para montar a sidebar). Chamado por public/js/layout.js
     em toda página dashboard*.html.
     """
     chats = query(
@@ -112,7 +112,7 @@ def accept_consent():
 @chats_api.route("/chats/<chat_id>", methods=["GET"])
 @require_auth
 def get_chat(chat_id):
-    """Dados de uma conversa específica + suas mensagens (frontend/js/chat.js)."""
+    """Dados de uma conversa específica + suas mensagens (public/js/chat.js)."""
     chat = get_owned_chat(chat_id, g.user["id"])
     if not chat:
         return jsonify({"error": "Conversa não encontrada"}), 404

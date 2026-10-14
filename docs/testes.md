@@ -121,11 +121,16 @@ gerado? quando a IA cai, a resposta é 502 **sem perder o que o usuário
 escreveu**? A qualidade do texto que o modelo devolve não é algo que um
 teste automatizado consiga afirmar.
 
+Pelo mesmo motivo, **nenhum teste envia e-mail de verdade**: a fixture
+`email_simulado` (`autouse`, em `tests/conftest.py`) troca o envio SMTP
+por uma função vazia, para a suíte nunca usar as credenciais do `.env`
+local. A voz (TTS) também é simulada nos testes de `/api/tts`.
+
 ---
 
 ## 6. Cobertura atual
 
-**Coberto** (64 testes pytest + 33 cenários Behave):
+**Coberto** (108 testes pytest + 33 cenários Behave):
 
 - Cadastro: validações, e-mail duplicado, normalização, hash da senha
 - Login/logout: credenciais, cookie de sessão, sessão expirada
@@ -137,8 +142,18 @@ teste automatizado consiga afirmar.
   **falha da IA sem perda de dados**
 - **Isolamento entre usuários**: ler, renomear, apagar e mandar mensagem
   em conversa alheia - todos barrados
-- Conta: perfil, interesses (deduplicação, limite, truncamento), troca
-  de senha, exportação de dados, exclusão em cascata
+- Conta: perfil, foto grande demais ou que não é imagem, interesses
+  (deduplicação, limite, truncamento), troca de senha, exportação de
+  dados (inclusive o aceite dos termos), exclusão em cascata
+- Aceite dos termos: cadastro sem as confirmações é recusado, conta sem
+  o aceite atual não conversa nem gera áudio (403) até aceitar
+- Voz (`/api/tts`): login obrigatório, voz por personalidade, texto
+  vazio/longo demais, falha do Gemini vira 502
+- 2FA (`tests/test_two_factor_api.py`): ativação só após confirmar,
+  login em duas etapas, replay e tolerância de relógio, expiração do
+  desafio, códigos de recuperação de uso único, limite de tentativas
+  persistente, desativação e renovação, operação sem chave de
+  criptografia, concorrência, rollback e schema idempotente
 
 **Não coberto:**
 
@@ -147,8 +162,11 @@ teste automatizado consiga afirmar.
 | Frontend (HTML/CSS/JS) | Exigiria Selenium/Playwright - fora do escopo atual |
 | Qualidade das respostas do Gemini | Não é verificável por asserção |
 | Envio real de e-mail SMTP | Depende de servidor externo |
-| Carga / concorrência | Nenhum teste de desempenho |
+| Carga / concorrência | Nenhum teste de desempenho (exceto a concorrência do 2FA) |
 | Reconexão do pool ao Neon | `_with_retry` em `db.py` não tem teste |
+| Parar/desfazer envio (`POST /api/chats/<id>/cancel`) | Ainda sem teste - inclusive a volta do título para "New Chat" |
+| Trocar personalidade/esforço (`/personality`, `/effort`) | Ainda sem teste |
+| "Preguiça" do MathIAs (handoff para o TrashTalker) | Ainda sem teste |
 
 ---
 
@@ -156,7 +174,8 @@ teste automatizado consiga afirmar.
 
 **Testes de API (`tests/`)**: use as fixtures prontas do `conftest.py` -
 `cliente`, `usuario_logado`, `conversa`, `ia_falsa`, `ia_quebrada`. O
-banco já vem limpo (`banco_limpo` é `autouse`).
+banco já vem limpo e o e-mail já vem simulado (`banco_limpo` e
+`email_simulado` são `autouse`).
 
 ```python
 def test_alguma_coisa(cliente, conversa, ia_falsa):

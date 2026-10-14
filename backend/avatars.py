@@ -3,7 +3,7 @@ avatars.py
 ==========
 Lista fixa de avatares ilustrados que o usuário pode escolher na tela de
 conta (equivalente a src/avatars.ts). Os arquivos SVG correspondentes
-ficam em frontend/avatars/<id>.svg.
+ficam em public/avatars/<id>.svg.
 """
 
 ILLUSTRATED_AVATARS = [

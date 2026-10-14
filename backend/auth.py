@@ -84,7 +84,7 @@ def get_password_requirement_failures(password):
     vazia significa senha válida. Único lugar onde a regra é definida no
     backend, usado no cadastro, na redefinição por e-mail e na troca de
     senha estando logado (routes/auth_api.py e routes/chats_api.py), para
-    não divergir entre os três. Espelha PASSWORD_RULES em frontend/js/auth.js.
+    não divergir entre os três. Espelha PASSWORD_RULES em public/js/auth.js.
     """
     password = password or ""
     failures = []
@@ -197,7 +197,7 @@ def require_auth(view_func):
     redirecionava para /login), aqui devolvemos um JSON 401, já que estas
     rotas agora são uma API consumida via fetch() pelo JavaScript do
     frontend - é o próprio frontend que decide redirecionar para /login
-    quando recebe esse 401 (ver frontend/js/layout.js).
+    quando recebe esse 401 (ver public/js/layout.js).
     """
 
     @wraps(view_func)

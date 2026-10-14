@@ -8,7 +8,7 @@ Responsabilidades:
   2. Ligar o pool de conexões com o Postgres (db.init_pool()).
   3. Registrar as rotas da API (blueprints em routes/).
   4. Servir os arquivos estáticos do frontend (HTML/CSS/JS/imagens) que
-     ficam na pasta ../frontend.
+     ficam na pasta ../public.
   5. Mapear as URLs "bonitas" (/dashboard, /login, etc.) para o arquivo
      HTML correspondente, para que a navegação pareça idêntica à do
      projeto original em Express.
@@ -93,14 +93,14 @@ def create_app(database_url=None):
     @app.route("/dashboard/chat/<chat_id>")
     def chat_page(chat_id):
         # O id da conversa vai na própria URL, igual ao original
-        # (/dashboard/chat/:chatId). O JS da página (frontend/js/chat.js)
+        # (/dashboard/chat/:chatId). O JS da página (public/js/chat.js)
         # lê esse id de novo a partir de window.location.pathname.
         return send_from_directory(FRONTEND_DIR, "chat.html")
 
     @app.route("/dashboard/information")
     def information_redirect():
         # information.html foi incorporada à landing pública ("/") - ver
-        # frontend/index.html. Mantemos esta rota só para não quebrar
+        # public/index.html. Mantemos esta rota só para não quebrar
         # links/favoritos antigos: redireciona para a nova home.
         return redirect("/", code=302)
 
@@ -116,8 +116,6 @@ def create_app(database_url=None):
 # reconhece: `flask --app app routes` acha essa função sozinho. Para um
 # servidor WSGI (gunicorn/waitress), aponte para a fábrica:
 #     gunicorn "app:create_app()"
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    debug = os.environ.get("FLASK_ENV") != "production"
-    create_app().run(host="0.0.0.0", port=port, debug=debug)
+#
+# Quem cria o app no nível do módulo é o app.py da raiz (a Vercel precisa
+# de uma variável `app` lá), e é ele que roda o servidor local.

@@ -446,7 +446,7 @@ button {
 
 /* Sidebar retrátil no desktop: minimiza pra width:0 (mesmo botão ☰ da
    gaveta mobile, mas aqui a sidebar é visível por padrão e o estado
-   colapsado persiste em localStorage - ver frontend/js/layout.js e o
+   colapsado persiste em localStorage - ver public/js/layout.js e o
    script inline no <head> de cada página com sidebar). */
 @media (min-width: 861px) {
   .sidebar {
@@ -2225,7 +2225,7 @@ button, input, textarea, select { font-family: inherit; }
 }
 
 /* Configurações: cada seção num card com borda, como antes do redesign
-   (app copy.css), mas com as cores atuais. Só nesta página - o resto
+   (visual anterior, no histórico do git), mas com as cores atuais. Só nesta página - o resto
    segue o visual do redesign. */
 .settings-page .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-panel); padding: 1.5rem; gap: 0.75rem; }
 /* Dentro do card, os dados da conta dispensam a segunda caixa (como no antigo). */

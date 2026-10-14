@@ -16,6 +16,7 @@ Flask e publica `public/` como arquivos estáticos na CDN.
 | `/reset-password` | `public/reset-password.html` |
 | `/privacy` | `public/privacy.html` |
 | `/terms` | `public/terms.html` |
+| `/cookies` | `public/cookies.html` |
 | `/dashboard` | `public/dashboard.html` |
 | `/dashboard/account` | `public/account.html` |
 | `/dashboard/settings` | `public/settings.html` |

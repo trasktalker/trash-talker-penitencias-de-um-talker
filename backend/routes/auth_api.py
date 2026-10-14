@@ -14,7 +14,7 @@ Diferença de arquitetura importante: no projeto original, /login e /signup
 eram rotas que RENDERIZAVAM uma página EJS de novo em caso de erro (ou
 redirecionavam em caso de sucesso). Aqui, como o frontend é HTML estático
 puro, essas rotas passam a devolver sempre JSON - é o JavaScript do
-frontend (frontend/js/login.js, signup.js, etc.) que decide o que mostrar
+frontend (public/js/login.js, signup.js, etc.) que decide o que mostrar
 na tela ou para onde navegar.
 """
 
@@ -137,7 +137,7 @@ def signup():
     )
 
     # Igual ao original: signup NÃO loga o usuário automaticamente, ele
-    # é redirecionado para a tela de login (ver frontend/js/signup.js).
+    # é redirecionado para a tela de login (ver public/js/signup.js).
     return jsonify({"ok": True}), 201
 
 

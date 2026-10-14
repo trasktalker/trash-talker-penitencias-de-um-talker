@@ -11,12 +11,15 @@ Para rodar os testes, ver `testes.md`.
 
 ```
 python-app/
+├── app.py        # ponto de entrada (chama backend/factory.py:create_app)
 ├── backend/      # API Flask + acesso ao banco
-├── frontend/     # HTML/CSS/JS estático (sem build)
+├── public/       # HTML/CSS/JS estático (sem build)
 ├── tests/        # testes de API (pytest)
 ├── features/     # especificações de comportamento (Behave)
-└── docs/         # este arquivo e testes.md
+└── docs/         # este arquivo, testes.md, 2fa.md, proposta-do-site.md
 ```
+
+Árvore detalhada: `README.md`, seção 3.
 
 O backend não tem ORM nem framework de frontend. É uma escolha, não uma
 omissão: o projeto é pequeno, é base de um TCC, e SQL cru + JavaScript
@@ -33,7 +36,8 @@ puro tornam cada camada legível sem conhecimento prévio de biblioteca.
   está garantidamente preenchido.
 - Toda rota que toca uma conversa usa `get_owned_chat(chat_id, user_id)`
   e devolve **404** (não 403) quando não pertence ao usuário - 403
-  confirmaria que o id existe.
+  confirmaria que o id existe. Exceção hoje: as rotas de escrita
+  simples (ver divergência V-01 na seção 5).
 - Comentário explica *por quê*, não *o quê*. O código já diz o quê.
 
 **Testes**
@@ -124,12 +128,20 @@ Ver `testes.md`, seção 3. Resumo: `db.py` depende de recursos exclusivos
 do Postgres. Testar em SQLite validaria um código diferente do que roda
 em produção.
 
-### D-05 — `thinking_budget=0` no Gemini
+### D-05 — Raciocínio do Gemini controlado por `thinking_level`
 
-Modelos Gemini 2.5+ fazem raciocínio interno por padrão, e esses tokens
-saem do **mesmo** orçamento do `max_output_tokens`. Sem desligar, a
-resposta visível vinha cortada no meio. Um chatbot de conversa não
-precisa de raciocínio profundo. Ver `backend/ai.py`.
+**Situação:** a versão anterior desligava o raciocínio interno
+(`thinking_budget=0`), porque esses tokens saem do **mesmo** orçamento
+do `max_output_tokens` e a resposta visível vinha cortada. Os modelos
+Gemini 3 não deixam desligar o raciocínio, e mandar `thinking_budget`
+junto com `thinking_level` dá erro 400.
+
+**Decisão:** cada conversa tem um nível de esforço (`EFFORTS` em
+`backend/ai.py`): "Trash" usa `thinking_level` medium (mais rápido) e
+"Talker" usa high (respostas mais caprichadas), ambos com o mesmo modelo.
+`MAX_OUTPUT_TOKENS` (16384) é só um teto de segurança, alto o bastante
+para o raciocínio não engolir a resposta. Quem mantém a resposta curta é
+o prompt (`backend/personalities.py`).
 
 ### D-06 — 404 em vez de 403 para recurso de outro usuário
 
@@ -145,7 +157,26 @@ Quando o requisito, a implementação e o teste discordarem, **não escolha
 em silêncio**. Registre a divergência aqui, decida com base em
 evidência, e só então altere o código ou o teste.
 
-Nenhuma divergência aberta no momento.
+### V-01 — Rotas de escrita em conversa não devolvem 404 (aberta)
+
+**Convenção (seção 2):** rota que toca uma conversa usa
+`get_owned_chat` e devolve 404 se ela não for do usuário.
+
+**Implementação:** só ler, enviar mensagem e cancelar seguem isso.
+Renomear (`/title`), apagar (`/delete`), trocar personalidade
+(`/personality`) e esforço (`/effort`) filtram com `AND user_id = %s`
+direto no `UPDATE`/`DELETE` e devolvem `{"ok": true}` mesmo quando nada
+foi alterado.
+
+**Testes:** `test_nao_e_possivel_renomear_conversa_alheia` e
+`test_nao_e_possivel_apagar_conversa_alheia` conferem só que a conversa
+alheia não muda. Não verificam o status.
+
+**Avaliação:** não há falha de segurança: a conversa alheia nunca é
+alterada, e a resposta é igual para id inexistente e id alheio, então
+não vaza nada. O custo é o frontend receber "ok" para uma operação que
+não aconteceu. Falta decidir entre padronizar em 404 (código + testes)
+ou registrar a exceção como convenção.
 
 ---
 
@@ -154,16 +185,17 @@ Nenhuma divergência aberta no momento.
 | ID | Risco | Severidade | Situação |
 |---|---|---|---|
 | R-01 | Connection string do Neon commitada em texto puro no README, presente no histórico do Git desde o commit inicial, em repositório público | **Crítica** | Removida do arquivo atual. **Continua no histórico.** Exige rotação da senha no painel do Neon - remover o arquivo não resolve |
-| R-02 | Nome do modelo em `ai.py` (`gemini-3.5-flash`) não confirmado como existente | Alta | Em aberto. Se estiver errado, todo envio de mensagem devolve 502. Verificar com `client.models.list()` |
-| R-03 | Sem rate limiting em `/api/login`, `/api/signup`, `/api/forgot-password` | Alta | Em aberto. Permite força bruta de senha e abuso do envio de e-mail |
-| R-04 | Sem token CSRF nas rotas que alteram dados | Média | Em aberto. Mitigado parcialmente por cookie `SameSite=Lax` + JSON via `fetch`, mas não é proteção equivalente |
-| R-05 | Avatar em base64 sem limite de tamanho, gravado em `users.image` | Média | Em aberto. Um payload grande incha a linha e toda resposta que a devolve |
-| R-06 | Sem limite de tamanho de requisição (`MAX_CONTENT_LENGTH`) | Média | Em aberto |
+| R-02 | Modelos em `ai.py` (`gemini-3.8-flash` no chat, `gemini-3.8-flash-tts` na voz) sem verificação registrada | Alta | Em aberto. Se um nome estiver errado, todo envio de mensagem (ou todo "ouvir") devolve 502. Verificar com `client.models.list()` |
+| R-03 | Sem rate limiting em `/api/login`, `/api/signup`, `/api/forgot-password` | Alta | Em aberto. Permite força bruta de senha e abuso do envio de e-mail. Só as verificações do 2FA têm limite (5 falhas em 15 min por conta, ver `docs/2fa.md`) |
+| R-04 | Sem token CSRF nas rotas que alteram dados | Média | Parcial. Mitigado por cookie `SameSite=Lax` + JSON via `fetch`, mas não é proteção equivalente. As rotas 2FA conferem `Origin`/`Sec-Fetch-Site`; as demais não |
+| R-05 | Avatar em base64 sem limite de tamanho, gravado em `users.image` | Média | **Resolvido.** `update_account` recusa imagem acima de `MAX_IMAGE_CHARS` (350 mil caracteres) ou que não seja `data:image/` |
+| R-06 | Sem limite de tamanho de requisição (`MAX_CONTENT_LENGTH`) | Média | Parcial. Só as rotas 2FA recusam corpo acima de 16 KB |
 | R-07 | Histórico inteiro da conversa vai para o Gemini a cada mensagem | Média | Em aberto. Conversa longa = custo, latência e risco de estourar o limite de tokens. Truncar para as últimas N mensagens |
-| R-08 | `traceback.print_exc()` em `chats_api.send_message` | Baixa | Em aberto. Debug temporário da migração Groq→Gemini; trocar por `logging` |
+| R-08 | `traceback.print_exc()` em `chats_api.send_message` e `chats_api.text_to_speech` | Baixa | Em aberto. Debug temporário da migração Groq→Gemini; trocar por `logging` |
 | R-09 | Sem ferramenta de migração de banco - `schema.sql` é rodado à mão | Baixa | Aceito conscientemente. O arquivo usa `IF NOT EXISTS`/`ADD COLUMN IF NOT EXISTS` e é idempotente |
 | R-10 | Frontend sem nenhum teste automatizado | Baixa | Aceito no escopo atual |
-| R-11 | Mensagens de commit pouco descritivas ("bazinga", "TCC amanhã") | Baixa | Em aberto. Dificulta entender a evolução do projeto |
+| R-11 | Mensagens de commit pouco descritivas ("bazinga", "TCC amanhã", "baguga") | Baixa | Em aberto. Dificulta entender a evolução do projeto |
+| R-12 | Perda ou troca da `TOTP_ENCRYPTION_KEY` | Alta | Aceito, com procedimento documentado. Sem a chave original, contas com 2FA não entram nem com código de recuperação. Guardar a chave em gerenciador de segredos e nunca trocá-la sem recifrar os segredos (ver `docs/2fa.md`) |
 
 ### R-01 em detalhe
 
@@ -188,10 +220,13 @@ segurança.
 
 | Procurando por | Vá para |
 |---|---|
-| Rotas da API | `backend/routes/auth_api.py`, `backend/routes/chats_api.py` |
-| Sessão, senha, tokens de reset | `backend/auth.py` |
+| Rotas da API | `backend/routes/auth_api.py`, `backend/routes/chats_api.py`, `backend/routes/two_factor_api.py` |
+| Sessão, senha, tokens de reset, aceite dos termos | `backend/auth.py` |
+| Autenticação em dois fatores | `backend/two_factor.py`, `docs/2fa.md` |
 | Acesso ao banco | `backend/db.py` |
 | Estrutura das tabelas | `backend/schema.sql` |
-| System prompt do TrashTalker | `backend/ai.py` |
-| Páginas e arquivos estáticos | `backend/app.py` (mapa `page_routes`) |
-| Configuração necessária | `backend/.env.example` |
+| Chamada ao Gemini, níveis de esforço, voz (TTS) | `backend/ai.py` |
+| System prompts das personalidades | `backend/personalities.py` |
+| Páginas e arquivos estáticos | `backend/factory.py` (mapa `page_routes`) **e** `vercel.json` (`rewrites`) - página nova entra nos dois |
+| Configuração necessária | `.env.example` (raiz de `python-app/`) |
+| Deploy | `DEPLOY_VERCEL.md`, `vercel.json` |
