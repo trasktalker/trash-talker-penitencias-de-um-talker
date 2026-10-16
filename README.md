@@ -145,7 +145,7 @@ python-app/
 │   │   ├── account.js        # formulário de perfil
 │   │   ├── settings.js       # senha, exportação, exclusão de conta
 │   │   └── two-factor.js     # telas do 2FA nas Configurações
-│   ├── avatars/*.svg, images/*.svg
+│   ├── avatars/*.png, images/*.svg
 │   └── logo-talker.svg, mathias-mark.svg, conversation-art*.svg
 ├── tests/                    # testes de API (pytest)
 │   ├── conftest.py           # banco de teste isolado + fixtures

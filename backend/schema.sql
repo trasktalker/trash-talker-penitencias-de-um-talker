@@ -41,6 +41,17 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS interests TEXT[] NOT NULL DEFAULT '{}
 ALTER TABLE users ADD COLUMN IF NOT EXISTS terms_accepted_at TIMESTAMPTZ;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS consent_version TEXT;
 
+-- Avatares ilustrados antigos (SVG) viraram os emojis PNG; mantém quem já tinha um escolhido.
+UPDATE users SET image = CASE image
+    WHEN 'avatar:avatar_robot' THEN 'avatar:avatar_feliz'
+    WHEN 'avatar:avatar_cat' THEN 'avatar:avatar_oculos'
+    WHEN 'avatar:avatar_astronaut' THEN 'avatar:avatar_apaixonado'
+    WHEN 'avatar:avatar_ninja' THEN 'avatar:avatar_surpreso'
+    WHEN 'avatar:avatar_gamer' THEN 'avatar:avatar_risada'
+    WHEN 'avatar:avatar_unicorn' THEN 'avatar:avatar_lingua'
+END WHERE image IN ('avatar:avatar_robot','avatar:avatar_cat','avatar:avatar_astronaut',
+    'avatar:avatar_ninja','avatar:avatar_gamer','avatar:avatar_unicorn');
+
 CREATE TABLE IF NOT EXISTS sessions (
     id         TEXT PRIMARY KEY,            -- o próprio token de sessão
     user_id    TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,

@@ -30,6 +30,7 @@ body.lm { overflow-x: clip; }
 .lm-word { display: inline-block; }
 .lm-floaters { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
 .lm-float { position: absolute; width: clamp(70px, 11vw, 160px); height: auto; opacity: .35; will-change: transform; }
+.lm-float[src^="/avatars/"] { border-radius: 50%; }
 .lm-float:nth-child(1) { left: 6%;  top: 110%; }
 .lm-float:nth-child(2) { left: 24%; top: 125%; }
 .lm-float:nth-child(3) { left: 42%; top: 105%; }

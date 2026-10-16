@@ -26,7 +26,7 @@ function renderAvatarHTML(image, name, size) {
       style +
       '" src="/avatars/' +
       avatarId +
-      '.svg" alt="' +
+      '.png" alt="' +
       escapeHtml(name) +
       '" />'
     );
