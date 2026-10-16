@@ -47,21 +47,19 @@ RETRY_MAX_DELAY = 4.0
 #
 # Os dois usam o mesmo modelo de propósito: quem conversa aqui são pessoas
 # com dificuldade, então acertar importa mais que custo ou velocidade. O
-# gemini-3.8-flash é o modelo estável mais novo e ganha do único Pro
-# disponível (gemini-3.1-pro-preview) na maioria dos benchmarks - e o Pro
-# ainda é preview, que o Google pode mudar ou desligar com pouco aviso
-# (e aí todo envio de mensagem vira 502).
+# gemini-4-argon é o modelo mais novo disponível; se o nome estiver errado,
+# todo envio de mensagem vira 502.
 EFFORTS = {
     "trash": {
         "name": "Trash",
         "subtitle": "Respostas mais rápidas",
-        "model": "gemini-3.8-flash",
+        "model": "gemini-4-argon",
         "thinking_level": "medium",
     },
     "talker": {
         "name": "Talker",
         "subtitle": "Respostas mais caprichadas",
-        "model": "gemini-3.8-flash",
+        "model": "gemini-4-argon",
         "thinking_level": "high",
     },
 }
@@ -257,6 +255,11 @@ TTS_VOICES = {
         "voice": "Puck",  # "Upbeat"
         "style": "jovem brasileiro descontraído e bem-humorado, ritmo leve de "
         "conversa entre amigos",
+    },
+    "evaisto": {
+        "voice": "Schedar",  # "Even"
+        "style": "jovem brasileiro de 18 anos, humor seco e deadpan, fala "
+        "tranquila e sem rir das próprias piadas",
     },
 }
 

@@ -2071,6 +2071,7 @@ html.dark .hero-art .hero-art-dark { display: block; }
 .msg-assistant .msg-avatar { grid-column: 1; grid-row: 1 / 3; }
 .msg-assistant .msg-content { grid-column: 2; border-radius: 16px; }
 .msg-mathias .msg-content { border-left: 3px solid #eb6a40; border-bottom-left-radius: 4px; }
+.msg-evaisto .msg-content { border-left: 3px solid #f7d834; border-bottom-left-radius: 4px; }
 .msg-avatar img { width: 28px; height: 28px; display: block; }
 .composer button[type="submit"].is-stop { width: auto; max-width: 100%; height: auto; min-height: 44px; gap: 8px; padding: 8px 12px; font-size: 14px; }
 .ui-message { width: 100%; max-width: 720px; margin: 8px auto; padding: 12px; border: 1px solid var(--input); border-radius: 12px; color: var(--foreground); background: var(--card); font-size: 14px; overflow-wrap: anywhere; }

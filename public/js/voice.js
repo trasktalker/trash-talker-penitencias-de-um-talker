@@ -403,8 +403,8 @@ function addSpeakButton(bolha) {
       return;
     }
     var conteudo = bolha.querySelector(".msg-content");
-    // buildMessageBubble (chat.js) marca a bolha com msg-<personalidade>.
-    var personality = bolha.classList.contains("msg-mathias") ? "mathias" : "trashtalker";
+    // buildMessageBubble (chat.js) marca a bolha com data-personality.
+    var personality = bolha.dataset.personality || "trashtalker";
     speakMessage(conteudo ? conteudo.textContent : "", botao, personality);
   });
 

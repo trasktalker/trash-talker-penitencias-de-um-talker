@@ -1,4 +1,10 @@
 <!doctype html>
+<!--
+  Landing animada (GSAP + ScrollTrigger + Lenis).
+  PARA VOLTAR À LANDING ANTIGA, rode na raiz do projeto:
+    Copy-Item public/index.original.html public/index.html -Force
+  (Os arquivos css/landing-motion.css e js/landing-motion.js ficam sem uso e podem ser apagados.)
+-->
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
@@ -6,12 +12,13 @@
   <title>Trash Talker</title>
   <link rel="icon" href="/logo-talker.svg" />
   <link rel="stylesheet" href="/css/app.css" />
+  <link rel="stylesheet" href="/css/landing-motion.css" />
   <script src="/js/ui.js" defer></script>
   <script src="/js/theme.js"></script>
 </head>
-<body>
+<body class="lm">
   <a class="skip-link" href="#main-content">Pular para o conteúdo</a>
-  <nav class="lp-nav" aria-label="Navegação principal">
+  <nav class="lp-nav lm-nav" aria-label="Navegação principal">
     <div class="lp-container">
       <div class="brand">
         <img class="brand-icon" src="/logo-talker.svg" alt="" />
@@ -28,65 +35,102 @@
   <main class="lp" id="main-content" tabindex="-1">
 
     <!-- HERO -->
-    <section class="lp-hero">
-      <div class="lp-hero-glow"></div>
-      <div class="lp-container">
-  
-        <div class="hero-copy">
-        <h1 class="lp-hero-title">
-          jogue<br/><span class="lp-gradient-text">o silêncio fora.</span>
-        </h1>
-        <div class="lp-hero-actions">
-          <a href="/signup" class="btn-primary btn-lg lp-btn-glow" data-hero-guest>
-            <svg class="icon" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M12 5l5 5-5 5"/></svg>
-            Começar a conversar
-          </a>
-          <a href="/login" class="btn-outline btn-lg" data-hero-guest>Já tenho uma conta</a>
-          <a href="/dashboard" class="btn-primary btn-lg lp-btn-glow" data-hero-user hidden>
-            <svg class="icon" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M12 5l5 5-5 5"/></svg>
-            Ir para as conversas
-          </a>
+    <section class="lm-hero">
+      <div class="lp-hero-glow" data-parallax="-0.15"></div>
+      <div class="lp-container lm-hero-grid">
+        <div class="lm-hero-copy">
+          <h1 class="lm-giant" aria-label="jogue o silêncio fora.">
+            <span class="lm-line" aria-hidden="true" data-split>jogue</span>
+            <span class="lm-line lm-accent" aria-hidden="true" data-split>o silêncio</span>
+            <span class="lm-line lm-accent" aria-hidden="true" data-split>fora.</span>
+          </h1>
+          <div class="lp-hero-actions lm-hero-actions">
+            <a href="/signup" class="btn-primary btn-lg lp-btn-glow" data-hero-guest>
+              <svg class="icon" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M12 5l5 5-5 5"/></svg>
+              Começar a conversar
+            </a>
+            <a href="/login" class="btn-outline btn-lg" data-hero-guest>Já tenho uma conta</a>
+            <a href="/dashboard" class="btn-primary btn-lg lp-btn-glow" data-hero-user hidden>
+              <svg class="icon" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M12 5l5 5-5 5"/></svg>
+              Ir para as conversas
+            </a>
+          </div>
         </div>
-        </div>
-        <figure class="hero-art" aria-hidden="true">
+        <figure class="hero-art lm-hero-art" aria-hidden="true" data-parallax="0.12">
           <img class="hero-art-light" src="/conversation-art-home-light.svg" alt="" width="600" height="600" fetchpriority="high" />
           <img class="hero-art-dark" src="/conversation-art.svg" alt="" width="600" height="600" fetchpriority="high" />
         </figure>
       </div>
     </section>
 
-    <!-- FEATURES -->
-   
+    <!-- MANIFESTO -->
+    <section class="lm-manifesto" aria-labelledby="manifesto-title">
+      <div class="lm-floaters" aria-hidden="true">
+        <img class="lm-float" data-speed="-260" data-rot="40" src="/logo-talker.svg" alt="" />
+        <img class="lm-float" data-speed="-420" data-rot="-30" src="/avatars/avatar_astronaut.svg" alt="" />
+        <img class="lm-float" data-speed="-180" data-rot="25" src="/avatars/avatar_cat.svg" alt="" />
+        <img class="lm-float" data-speed="-340" data-rot="-45" src="/mathias-completo.svg" alt="" />
+        <img class="lm-float" data-speed="-500" data-rot="35" src="/avatars/avatar_gamer.svg" alt="" />
+        <img class="lm-float" data-speed="-220" data-rot="-20" src="/avatars/avatar_robot.svg" alt="" />
+        <img class="lm-float" data-speed="-380" data-rot="50" src="/avatars/avatar_unicorn.svg" alt="" />
+        <img class="lm-float" data-speed="-300" data-rot="-35" src="/avatars/avatar_ninja.svg" alt="" />
+        <img class="lm-float" data-speed="-460" data-rot="30" src="/evaisto-completo.svg" alt="" />
+      </div>
+      <div class="lp-container">
+        <span class="lp-section-badge">Manifesto</span>
+        <p class="lm-manifesto-text" id="manifesto-title" data-words>Um lugar pra quebrar o silêncio, praticar o que dizer e chegar mais confiante nas conversas de verdade.</p>
+      </div>
+    </section>
+
+    <!-- PERSONALIDADES -->
+    <section class="lm-people" aria-label="Personalidades">
+      <article class="lm-person" data-from="-1">
+        <div class="lp-container">
+          <div class="lm-person-head">
+            <h2 class="lm-giant lm-name" data-reveal>TrashTalker</h2>
+            <img class="lm-logo" src="/logo-talker.svg" alt="" />
+          </div>
+          <p>O companheiro de conversa empático e direto. Entende a situação, acolhe o que você sente e ajuda a ensaiar o que dizer, como um amigo de confiança.</p>
+        </div>
+      </article>
+      <article class="lm-person lm-person-right" data-from="1">
+        <div class="lp-container">
+          <div class="lm-person-head">
+            <img class="lm-logo lm-mascot" src="/mathias-completo.svg" alt="" />
+            <h2 class="lm-giant lm-name" data-reveal>MathIAs</h2>
+          </div>
+          <p>A personalidade da resenha. Descontraído e bem-humorado, ótimo pra rir, relaxar e aliviar o peso do dia.</p>
+        </div>
+      </article>
+      <article class="lm-person" data-from="-1">
+        <div class="lp-container">
+          <div class="lm-person-head">
+            <h2 class="lm-giant lm-name" data-reveal>evAIsto</h2>
+            <img class="lm-logo lm-mascot" src="/evaisto-completo.svg" alt="" />
+          </div>
+          <p>O parça do absurdo com cara séria. Solta teoria sem pé nem cabeça, tier list de coisa nada a ver e, quando o papo é sério, ajuda de verdade.</p>
+        </div>
+      </article>
+    </section>
 
     <!-- HOW IT WORKS -->
-    <section class="lp-how">
+    <section class="lp-how lm-how">
       <div class="lp-container">
         <span class="lp-section-badge">Como funciona</span>
         <h2 class="lp-section-title">Do zero à primeira conversa</h2>
-
-        <div class="lp-steps">
-          <div class="lp-step">
-            <div class="lp-step-number">1</div>
-            <div class="lp-step-content">
-              <h3>Crie sua conta</h3>
-              <p>Informe seu nome, email e senha. Sem cartão e sem anúncios.</p>
-            </div>
+        <div class="lm-steps">
+          <div class="lm-progress" aria-hidden="true"><span class="lm-progress-bar"></span></div>
+          <div class="lm-step">
+            <span class="lm-step-num" aria-hidden="true">01</span>
+            <div><h3>Crie sua conta</h3><p>Informe seu nome, email e senha. Sem cartão e sem anúncios.</p></div>
           </div>
-          <div class="lp-step-connector"></div>
-          <div class="lp-step">
-            <div class="lp-step-number">2</div>
-            <div class="lp-step-content">
-              <h3>Monte seu perfil</h3>
-              <p>Avatar, apelido, interesses.</p>
-            </div>
+          <div class="lm-step">
+            <span class="lm-step-num" aria-hidden="true">02</span>
+            <div><h3>Monte seu perfil</h3><p>Avatar, apelido, interesses.</p></div>
           </div>
-          <div class="lp-step-connector"></div>
-          <div class="lp-step">
-            <div class="lp-step-number">3</div>
-            <div class="lp-step-content">
-              <h3>Mande a conversa</h3>
-              <p>Escreva no seu ritmo. Você escolhe quando enviar.</p>
-            </div>
+          <div class="lm-step">
+            <span class="lm-step-num" aria-hidden="true">03</span>
+            <div><h3>Mande a conversa</h3><p>Escreva no seu ritmo. Você escolhe quando enviar.</p></div>
           </div>
         </div>
       </div>
@@ -95,7 +139,7 @@
     <!-- CTA -->
     <section class="lp-cta">
       <div class="lp-container">
-        <div class="lp-cta-inner">
+        <div class="lp-cta-inner lm-cta">
           <div class="lp-cta-glow"></div>
           <h2>Bora jogar conversa fora</h2>
           <p>É só clicar. Que o papo começa na hora.</p>
@@ -130,12 +174,13 @@
 
   <script src="/js/api.js"></script>
   <script src="/js/auth.js"></script>
-  <!-- landing.js: ajusta a nav e o CTA do hero conforme a sessão
-       (GET /api/me) - "Entrar/Criar conta"/"Começar a conversar" para
-       visitantes, "Ir para as conversas"/"Ir para as conversas" para quem já
-       está logado. Não redireciona mais: a landing agora é a mesma
-       página para os dois casos. -->
+  <!-- landing.js: ajusta nav e CTA do hero conforme a sessão (GET /api/me). -->
   <script src="/js/landing.js"></script>
 
+  <!-- Animações: se os CDNs falharem, a página continua legível (sem classe .js-motion). -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js" defer></script>
+  <script src="/js/landing-motion.js" defer></script>
 </body>
 </html>

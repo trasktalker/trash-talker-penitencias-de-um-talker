@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Trash Talker</title>
+  <link rel="icon" href="/logo-talker.svg" />
+  <link rel="stylesheet" href="/css/app.css" />
+  <script src="/js/ui.js" defer></script>
+  <script src="/js/theme.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Pular para o conteúdo</a>
+  <nav class="lp-nav" aria-label="Navegação principal">
+    <div class="lp-container">
+      <div class="brand">
+        <img class="brand-icon" src="/logo-talker.svg" alt="" />
+        <span class="brand-name">Trash Talker</span>
+      </div>
+      <div class="lp-nav-actions">
+        <a href="/login" class="btn-ghost" data-nav-guest>Entrar</a>
+        <a href="/signup" class="btn-primary" data-nav-guest>Criar conta</a>
+        <a href="/dashboard" class="btn-primary" data-nav-user hidden>Ir para as conversas</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="lp" id="main-content" tabindex="-1">
+
+    <!-- HERO -->
+    <section class="lp-hero">
+      <div class="lp-hero-glow"></div>
+      <div class="lp-container">
+  
+        <div class="hero-copy">
+        <h1 class="lp-hero-title">
+          jogue<br/><span class="lp-gradient-text">o silêncio fora.</span>
+        </h1>
+        <div class="lp-hero-actions">
+          <a href="/signup" class="btn-primary btn-lg lp-btn-glow" data-hero-guest>
+            <svg class="icon" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M12 5l5 5-5 5"/></svg>
+            Começar a conversar
+          </a>
+          <a href="/login" class="btn-outline btn-lg" data-hero-guest>Já tenho uma conta</a>
+          <a href="/dashboard" class="btn-primary btn-lg lp-btn-glow" data-hero-user hidden>
+            <svg class="icon" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M12 5l5 5-5 5"/></svg>
+            Ir para as conversas
+          </a>
+        </div>
+        </div>
+        <figure class="hero-art" aria-hidden="true">
+          <img class="hero-art-light" src="/conversation-art-home-light.svg" alt="" width="600" height="600" fetchpriority="high" />
+          <img class="hero-art-dark" src="/conversation-art.svg" alt="" width="600" height="600" fetchpriority="high" />
+        </figure>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+   
+
+    <!-- HOW IT WORKS -->
+    <section class="lp-how">
+      <div class="lp-container">
+        <span class="lp-section-badge">Como funciona</span>
+        <h2 class="lp-section-title">Do zero à primeira conversa</h2>
+
+        <div class="lp-steps">
+          <div class="lp-step">
+            <div class="lp-step-number">1</div>
+            <div class="lp-step-content">
+              <h3>Crie sua conta</h3>
+              <p>Informe seu nome, email e senha. Sem cartão e sem anúncios.</p>
+            </div>
+          </div>
+          <div class="lp-step-connector"></div>
+          <div class="lp-step">
+            <div class="lp-step-number">2</div>
+            <div class="lp-step-content">
+              <h3>Monte seu perfil</h3>
+              <p>Avatar, apelido, interesses.</p>
+            </div>
+          </div>
+          <div class="lp-step-connector"></div>
+          <div class="lp-step">
+            <div class="lp-step-number">3</div>
+            <div class="lp-step-content">
+              <h3>Mande a conversa</h3>
+              <p>Escreva no seu ritmo. Você escolhe quando enviar.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="lp-cta">
+      <div class="lp-container">
+        <div class="lp-cta-inner">
+          <div class="lp-cta-glow"></div>
+          <h2>Bora jogar conversa fora</h2>
+          <p>É só clicar. Que o papo começa na hora.</p>
+          <a href="/dashboard" class="btn-primary btn-lg lp-btn-glow">
+            <svg class="icon" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M12 5l5 5-5 5"/></svg>
+            Ir para as conversas
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="lp-footer">
+      <div class="lp-container">
+        <div class="lp-footer-inner">
+          <div class="lp-footer-brand">
+            <img src="/logo-talker.svg" alt="" width="28" height="28" />
+            <span>Trash Talker</span>
+          </div>
+          <div class="lp-footer-links">
+            <a href="/privacy">Privacidade</a>
+            <a href="/terms">Termos de Uso</a>
+            <a href="/cookies">Cookies</a>
+            <a href="mailto:trashtalkpodcast123456@gmail.com">Contato</a>
+          </div>
+        </div>
+        <p class="lp-footer-note">Trash Talker é um projeto acadêmico (TCC), gratuito e sem anúncios. Para maiores de 18 anos.</p>
+      </div>
+    </footer>
+
+  </main>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <!-- landing.js: ajusta a nav e o CTA do hero conforme a sessão
+       (GET /api/me) - "Entrar/Criar conta"/"Começar a conversar" para
+       visitantes, "Ir para as conversas"/"Ir para as conversas" para quem já
+       está logado. Não redireciona mais: a landing agora é a mesma
+       página para os dois casos. -->
+  <script src="/js/landing.js"></script>
+
+</body>
+</html>

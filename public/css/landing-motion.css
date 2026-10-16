@@ -1,0 +1,83 @@
+/* Landing animada. Só afeta index.html (body.lm). Estados "escondidos" só valem com .js-motion. */
+
+/* Lenis/ScrollTrigger precisam de altura automática (app.css põe height:100%) */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+body.lm { overflow-x: clip; }
+
+.lm-nav { position: sticky; top: 0; z-index: 50; transition: background .3s; }
+.lm-nav.is-scrolled { background: color-mix(in srgb, var(--background) 85%, transparent); backdrop-filter: blur(10px); }
+/* app.css esconde o nome quando a sidebar do dashboard está recolhida; na landing ele sempre aparece */
+.lm .lm-nav .brand-name { display: inline; }
+
+.lm-giant { font-weight: 800; letter-spacing: -0.04em; line-height: .98; margin: 0; }
+
+/* Hero */
+.lm-hero { position: relative; overflow: hidden; padding: 3rem 0 4rem; }
+.lm-hero-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 2rem; align-items: center; }
+.lm-hero-copy { min-width: 0; }
+.lm-hero .lm-giant { font-size: clamp(2.8rem, 9vw, 7.5rem); margin-bottom: 2rem; }
+.lm-line { display: block; overflow: hidden; padding-bottom: .1em; }
+.lm-accent { color: var(--primary); }
+.lm-char { display: inline-block; will-change: transform; }
+.lm-hero-actions { justify-content: flex-start; flex-wrap: wrap; }
+.lm-hero-art { max-width: 420px; width: 100%; justify-self: center; }
+
+/* Manifesto */
+.lm-manifesto { position: relative; min-height: 100vh; display: flex; align-items: center; overflow: hidden; }
+.lm-manifesto .lp-container { width: 100%; }
+.lm-manifesto-text { font-size: clamp(1.8rem, 5vw, 4rem); font-weight: 700; line-height: 1.15; letter-spacing: -0.02em; max-width: 24em; margin: 0; position: relative; z-index: 2; }
+.lm-word { display: inline-block; }
+.lm-floaters { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+.lm-float { position: absolute; width: clamp(70px, 11vw, 160px); height: auto; opacity: .35; will-change: transform; }
+.lm-float:nth-child(1) { left: 6%;  top: 110%; }
+.lm-float:nth-child(2) { left: 24%; top: 125%; }
+.lm-float:nth-child(3) { left: 42%; top: 105%; }
+.lm-float:nth-child(4) { left: 60%; top: 130%; }
+.lm-float:nth-child(5) { left: 76%; top: 115%; }
+.lm-float:nth-child(6) { left: 88%; top: 135%; }
+.lm-float:nth-child(7) { left: 14%; top: 150%; }
+.lm-float:nth-child(8) { left: 68%; top: 155%; }
+.lm-float:nth-child(9) { left: 34%; top: 140%; }
+
+/* Personalidades */
+.lm-people { padding: 3rem 0; overflow-x: clip; }
+.lm-person { padding: 3rem 0; border-top: 1px solid var(--border); }
+.lm-person .lp-container { display: flex; flex-direction: column; align-items: flex-start; }
+.lm-person-right .lp-container { align-items: flex-end; text-align: right; }
+.lm-person-head { display: flex; align-items: center; gap: 1.25rem; max-width: 100%; }
+.lm-name { font-size: clamp(2.4rem, 9vw, 7.5rem); min-width: 0; }
+.lm-logo { height: clamp(52px, 8vw, 110px); width: auto; flex: none; }
+.lm-mascot { height: clamp(60px, 9vw, 120px); }
+.lm-person p { color: var(--muted-foreground); font-size: 1.15rem; margin: 1rem 0 0; max-width: 36rem; }
+
+/* Como funciona */
+.lm-how { padding: 4rem 0 5rem; overflow-x: clip; }
+.lm-how .lp-container { display: block; }
+.lm-steps { position: relative; display: grid; gap: 3.5rem; padding-left: 1.75rem; margin-top: 2rem; }
+.lm-progress { position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--border); border-radius: 3px; }
+.lm-progress-bar { display: block; width: 100%; height: 100%; background: var(--primary); border-radius: 3px; transform-origin: top; }
+.lm-step { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1.5rem 2.5rem; align-items: center; }
+.lm-step-num { font-size: clamp(4rem, 14vw, 11rem); font-weight: 800; letter-spacing: -0.05em; line-height: .9; color: var(--border); transition: color .4s; }
+.lm-step.is-active .lm-step-num { color: var(--primary); }
+.lm-step h3 { font-size: clamp(1.5rem, 3.5vw, 2.4rem); margin: 0 0 .5rem; }
+.lm-step p { color: var(--muted-foreground); font-size: 1.15rem; margin: 0; max-width: 30rem; }
+
+/* Estados iniciais (só com JS) */
+.js-motion .lm-char { transform: translateY(110%); }
+.js-motion .lm-hero-actions, .js-motion .lm-hero-art { opacity: 0; }
+.js-motion .lm-word { opacity: .15; }
+
+@media (max-width: 860px) {
+  .lm-hero-grid { grid-template-columns: minmax(0, 1fr); }
+  .lm-hero-art { max-width: 20rem; }
+  .lm-manifesto { min-height: 80vh; }
+  .lm-float:nth-child(n+5) { display: none; }
+  .lm-float { width: 70px; opacity: .3; }
+  .lm-step { grid-template-columns: minmax(0, 1fr); gap: .5rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js-motion .lm-char, .js-motion .lm-hero-actions, .js-motion .lm-hero-art, .js-motion .lm-word { transform: none; opacity: 1; }
+  .lm-float { display: none; }
+}

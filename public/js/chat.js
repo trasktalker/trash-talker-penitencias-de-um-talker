@@ -114,6 +114,12 @@ function resizeComposerInput(input) {
   var maxHeight = parseFloat(getComputedStyle(input).maxHeight) || Infinity;
   input.style.height = Math.min(maxHeight, input.scrollHeight) + "px";
 }
+// Nome e ícone de cada personalidade (chaves de backend/personalities.py).
+var PERSONAS = {
+  trashtalker: ["TrashTalker", "/logo-talker.svg"],
+  mathias: ["MathIAs", "/mathias-mark.svg"],
+  evaisto: ["evAIsto", "/evaisto-completo.svg"]
+};
 function buildMessageBubble(role, content, personality) {
   var bubble = document.createElement("div"), avatar = document.createElement("div"), text = document.createElement("div");
   bubble.className = "msg-bubble " + (role === "user" ? "msg-user" : "msg-assistant");
@@ -123,13 +129,13 @@ function buildMessageBubble(role, content, personality) {
     avatar.innerHTML = '<svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="6" r="3"/><path d="M3 18c0-8 14-8 14 0"/></svg>';
     bubble.append(avatar, text);
   } else {
-    var known = ["mathias", "trashtalker"].includes(personality);
+    var known = PERSONAS[personality];
     var author = document.createElement("span"); author.className = "msg-author";
-    author.textContent = known ? (personality === "mathias" ? "MathIAs" : "TrashTalker") : "IA";
+    author.textContent = known ? known[0] : "IA";
     if (known) {
-      var logo = document.createElement("img"); logo.src = personality === "mathias" ? "/mathias-mark.svg" : "/logo-talker.svg";
+      var logo = document.createElement("img"); logo.src = known[1];
       logo.alt = ""; logo.width = 28; logo.height = 28; avatar.appendChild(logo);
-      bubble.classList.add("msg-" + personality);
+      bubble.classList.add("msg-" + personality); bubble.dataset.personality = personality;
     } else avatar.textContent = "IA";
     bubble.append(avatar, author, text);
     if (typeof addSpeakButton === "function") addSpeakButton(bubble);
@@ -166,7 +172,7 @@ async function loadChatMessagesIfNeeded() {
 function updatePersonalityHeading(personality) {
   var title = document.querySelector(".topbar-title");
   if (!title) return;
-  title.textContent = personality === "mathias" ? "MathIAs" : personality === "trashtalker" ? "TrashTalker" : "Conversa";
+  title.textContent = PERSONAS[personality] ? PERSONAS[personality][0] : "Conversa";
 }
 function setComposerPensando(inputId, submitId, thinking) {
   var input = document.getElementById(inputId), submit = document.getElementById(submitId);

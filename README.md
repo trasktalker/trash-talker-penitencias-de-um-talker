@@ -286,7 +286,7 @@ por conversa (`backend/personalities.py`, `GET /api/dashboard` →
 opções, TrashTalker e MathIAs, mas a lista foi desenhada para crescer
 sem mudar o formato da API. No mesmo seletor há o nível de esforço
 (`EFFORTS` em `ai.py`, `POST /api/chats/<id>/effort`), que troca o quanto
-o Gemini pensa antes de responder: os dois usam o `gemini-3.8-flash`, com
+o Gemini pensa antes de responder: os dois usam o `gemini-4-argon`, com
 thinking "medium" no "Trash" (mais rápido) e "high" no "Talker" (respostas
 mais caprichadas). O MathIAs ainda tem uma
 regra própria de "preguiça" (`LAZY_*` em `personalities.py`): mensagem
