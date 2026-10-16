@@ -53,13 +53,13 @@ EFFORTS = {
     "trash": {
         "name": "Trash",
         "subtitle": "Respostas mais rápidas",
-        "model": "gemini-4-argon",
+        "model": "gemini-3.5-flash-lite",
         "thinking_level": "medium",
     },
     "talker": {
         "name": "Talker",
         "subtitle": "Respostas mais caprichadas",
-        "model": "gemini-4-argon",
+        "model": "gemini-3.5-flash-lite",
         "thinking_level": "high",
     },
 }
