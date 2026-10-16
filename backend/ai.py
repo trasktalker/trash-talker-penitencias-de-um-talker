@@ -47,7 +47,7 @@ RETRY_MAX_DELAY = 4.0
 #
 # Os dois usam o mesmo modelo de propósito: quem conversa aqui são pessoas
 # com dificuldade, então acertar importa mais que custo ou velocidade. O
-# gemini-4-argon é o modelo mais novo disponível; se o nome estiver errado,
+# gemini-3.5-flash-lite é o modelo em uso; se o nome estiver errado,
 # todo envio de mensagem vira 502.
 EFFORTS = {
     "trash": {

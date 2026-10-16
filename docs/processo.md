@@ -185,7 +185,7 @@ ou registrar a exceção como convenção.
 | ID | Risco | Severidade | Situação |
 |---|---|---|---|
 | R-01 | Connection string do Neon commitada em texto puro no README, presente no histórico do Git desde o commit inicial, em repositório público | **Crítica** | Removida do arquivo atual. **Continua no histórico.** Exige rotação da senha no painel do Neon - remover o arquivo não resolve |
-| R-02 | Modelos em `ai.py` (`gemini-4-argon` no chat, `gemini-3.8-flash-tts` na voz) sem verificação registrada | Alta | Em aberto. Se um nome estiver errado, todo envio de mensagem (ou todo "ouvir") devolve 502. Verificar com `client.models.list()` |
+| R-02 | Modelos em `ai.py` (`gemini-3.5-flash-lite` no chat, `gemini-3.8-flash-tts` na voz) sem verificação registrada | Alta | Em aberto. Se um nome estiver errado, todo envio de mensagem (ou todo "ouvir") devolve 502. Verificar com `client.models.list()` |
 | R-03 | Sem rate limiting em `/api/login`, `/api/signup`, `/api/forgot-password` | Alta | Em aberto. Permite força bruta de senha e abuso do envio de e-mail. Só as verificações do 2FA têm limite (5 falhas em 15 min por conta, ver `docs/2fa.md`) |
 | R-04 | Sem token CSRF nas rotas que alteram dados | Média | Parcial. Mitigado por cookie `SameSite=Lax` + JSON via `fetch`, mas não é proteção equivalente. As rotas 2FA conferem `Origin`/`Sec-Fetch-Site`; as demais não |
 | R-05 | Avatar em base64 sem limite de tamanho, gravado em `users.image` | Média | **Resolvido.** `update_account` recusa imagem acima de `MAX_IMAGE_CHARS` (350 mil caracteres) ou que não seja `data:image/` |
