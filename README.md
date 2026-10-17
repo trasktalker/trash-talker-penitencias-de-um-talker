@@ -376,3 +376,23 @@ O horário de cada bloco é o do registro no README; o commit `940ce68` ("mudan�
   - barra de salvar com "Alterações não salvas", botão **Desfazer** (sem recarregar a página) e **Salvar**;
   - títulos e dicas encurtados; barra do topo com "Seu perfil".
 - **Migração do banco:** antes de publicar, rode no banco de produção `ALTER TABLE messages ADD COLUMN IF NOT EXISTS personality TEXT;` (ou o `backend/schema.sql` inteiro, que é idempotente).
+
+### 03:57 - Perfil: volta ao layout anterior (sem commit ainda)
+
+- O polish do perfil (commit `fe4af63`) foi desfeito: `account.html`, `account.js` e `app.css` voltaram ao estado do commit `940ce68`.
+- **Foto de perfil num ícone só:** o avatar grande (com selo de câmera) abre um menu com os 6 avatares ilustrados e o botão "Enviar foto do aparelho". Fecha com Esc, clique fora ou ao escolher.
+- `account.html` agora chama `app.css` e `account.js` com `?v=20261017`, para a Vercel não misturar HTML novo com CSS antigo em cache.
+
+### 04:02 - Remoção de documentação e observações sobre deploy (sem commit ainda)
+
+- **Arquivos `.md` apagados** (o README foi mantido): `DEPLOY_VERCEL.md`, `docs/processo.md`, `docs/testes.md`, `docs/2fa.md` e `docs/proposta-do-site.md`. Não havia arquivos de plano de IA no repositório; a remoção seguiu a escolha de apagar todos os `.md` exceto o README.
+- **Efeito no site: nenhum.** Esses arquivos eram só documentação. A aplicação e a Vercel não os leem nem os servem. O `vercel.json` só cita `docs/**` para excluí-los dos arquivos da função.
+- **Referências que ficaram quebradas** (não corrigidas ainda):
+  - Links e a árvore de pastas do próprio README (`docs/2fa.md`, `docs/testes.md`, `docs/processo.md`, `docs/proposta-do-site.md`).
+  - Comentários em `backend/auth.py` e `backend/routes/chats_api.py` que citam `docs/processo.md`.
+  - Mensagens de erro em `tests/conftest.py` e `features/environment.py` que citam `docs/testes.md`.
+- **Informações do `DEPLOY_VERCEL.md` que continuam valendo para publicar:**
+  - Antes de publicar, rode `backend/schema.sql` no banco de produção. Ele é idempotente e cria `users.terms_accepted_at`, `users.consent_version` e `messages.personality`. Sem essas colunas, o login falha.
+  - Configure as variáveis de ambiente na Vercel: `DATABASE_URL`, `GEMINI_API_KEY`, `TOTP_ENCRYPTION_KEY`, e, se usar redefinição de senha por e-mail, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD` e `SMTP_FROM`. Nunca envie o arquivo `.env` ao repositório nem à Vercel.
+  - Faça primeiro um deploy de Preview, valide as URLs e só depois promova para Production.
+  - O 2FA exige o `schema.sql` atualizado antes de publicar o backend e as telas. Não faça rollback para um login sem verificação 2FA depois que houver contas protegidas.

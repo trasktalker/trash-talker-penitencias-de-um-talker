@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Trash Talker</title>
   <link rel="icon" href="/logo-talker.svg" />
-  <link rel="stylesheet" href="/css/app.css" />
+  <link rel="stylesheet" href="/css/app.css?v=20261017" />
   <script src="/js/ui.js" defer></script>
   <script src="/js/theme.js"></script>
 </head>
@@ -93,33 +93,39 @@
           </div>
 
           <form id="account-form" class="account-form">
-            <p class="field-hint" id="avatar-help">Avatar (opcional). Escolha uma imagem ou mantenha o avatar padrão.</p>
             <div class="avatar-picker" style="--i:0">
-              <!-- Preenchido por js/account.js com renderAvatarHTML(). -->
-              <button type="button" id="avatar-trigger" class="avatar-trigger" aria-label="Alterar avatar" aria-describedby="avatar-help"></button>
-              <input type="file" id="avatar-file-input" accept="image/*" hidden />
-              <input type="hidden" name="image" id="avatar-image-input" value="" />
+              <div class="avatar-menu-wrap">
+                <!-- Preenchido por js/account.js com renderAvatarHTML(). Um único ícone:
+                     tocar nele abre o menu para escolher um avatar ou enviar uma foto. -->
+                <button type="button" id="avatar-trigger" class="avatar-trigger" aria-label="Trocar foto de perfil" aria-haspopup="true" aria-expanded="false" aria-controls="avatar-menu" aria-describedby="avatar-help"></button>
+                <input type="file" id="avatar-file-input" accept="image/*" hidden />
+                <input type="hidden" name="image" id="avatar-image-input" value="" />
 
-              <div class="illustrated-avatars">
-                <button type="button" class="illustrated-avatar-btn" data-avatar-id="avatar_feliz" title="Feliz">
+                <div class="avatar-menu" id="avatar-menu" role="group" aria-label="Escolher foto" hidden>
+                  <div class="illustrated-avatars">
+                  <button type="button" class="illustrated-avatar-btn" data-avatar-id="avatar_feliz" title="Feliz">
                   <img src="/avatars/avatar_feliz.png" alt="Feliz" />
                 </button>
-                <button type="button" class="illustrated-avatar-btn" data-avatar-id="avatar_oculos" title="Estiloso">
+                  <button type="button" class="illustrated-avatar-btn" data-avatar-id="avatar_oculos" title="Estiloso">
                   <img src="/avatars/avatar_oculos.png" alt="Estiloso" />
                 </button>
-                <button type="button" class="illustrated-avatar-btn" data-avatar-id="avatar_apaixonado" title="Apaixonado">
+                  <button type="button" class="illustrated-avatar-btn" data-avatar-id="avatar_apaixonado" title="Apaixonado">
                   <img src="/avatars/avatar_apaixonado.png" alt="Apaixonado" />
                 </button>
-                <button type="button" class="illustrated-avatar-btn" data-avatar-id="avatar_surpreso" title="Surpreso">
+                  <button type="button" class="illustrated-avatar-btn" data-avatar-id="avatar_surpreso" title="Surpreso">
                   <img src="/avatars/avatar_surpreso.png" alt="Surpreso" />
                 </button>
-                <button type="button" class="illustrated-avatar-btn" data-avatar-id="avatar_risada" title="Gargalhada">
+                  <button type="button" class="illustrated-avatar-btn" data-avatar-id="avatar_risada" title="Gargalhada">
                   <img src="/avatars/avatar_risada.png" alt="Gargalhada" />
                 </button>
-                <button type="button" class="illustrated-avatar-btn" data-avatar-id="avatar_lingua" title="Brincalhão">
+                  <button type="button" class="illustrated-avatar-btn" data-avatar-id="avatar_lingua" title="Brincalhão">
                   <img src="/avatars/avatar_lingua.png" alt="Brincalhão" />
                 </button>
+                  </div>
+                  <button type="button" id="avatar-upload-btn" class="btn-outline">Enviar foto do aparelho</button>
+                </div>
               </div>
+              <p class="field-hint" id="avatar-help">Toque na foto para trocar. Avatar é opcional.</p>
             </div>
 
             <div class="field" style="--i:1">
@@ -173,6 +179,6 @@
   <script src="/js/avatar.js"></script>
   <script src="/js/auth.js"></script>
   <script src="/js/layout.js"></script>
-  <script src="/js/account.js"></script>
+  <script src="/js/account.js?v=20261017"></script>
 </body>
 </html>

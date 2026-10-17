@@ -166,7 +166,24 @@ function initAccountForm(form, user) {
 
   var avatarFileInput = document.getElementById("avatar-file-input");
 
+  // Menu do avatar: abre ao tocar no ícone; fecha com Esc, clique fora ou ao escolher.
+  var avatarMenu = document.getElementById("avatar-menu");
+  function setAvatarMenu(open, restoreFocus) {
+    avatarMenu.hidden = !open;
+    avatarTrigger.setAttribute("aria-expanded", String(open));
+    if (!open && restoreFocus) avatarTrigger.focus();
+  }
   avatarTrigger.addEventListener("click", function () {
+    setAvatarMenu(avatarMenu.hidden, false);
+  });
+  document.addEventListener("click", function (e) {
+    if (!avatarMenu.hidden && !e.target.closest(".avatar-menu-wrap")) setAvatarMenu(false, false);
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && !avatarMenu.hidden) setAvatarMenu(false, true);
+  });
+  document.getElementById("avatar-upload-btn").addEventListener("click", function () {
+    setAvatarMenu(false, false);
     avatarFileInput.click();
   });
 
@@ -263,6 +280,7 @@ function initAccountForm(form, user) {
       avatarTrigger.innerHTML = renderAvatarHTML(avatarImageInput.value, user.name, 96);
       popAvatar();
       syncAvatars();
+      setAvatarMenu(false, true);
     });
   });
 
