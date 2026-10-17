@@ -352,3 +352,27 @@ Mudanças feitas hoje, em ordem de horário (Brasília, UTC-03:00).
 - **evAIsto, prompt revisado:** tratamento de situações graves (CVV 188, SAMU 192), limite para flerte com resposta padrão, acolhimento quando a pessoa está triste, sem palavrões e sem emojis, no máximo uma pergunta por mensagem.
 - **`.env.example` removido** do repositório. Horário não registrado.
 - **Correções (18:56):** referências ao modelo do chat no README, em `docs/processo.md` (R-02) e no comentário de `ai.py` atualizadas para `gemini-3.5-flash-lite`; alias `SYSTEM_PROMPT` removido de `backend/personalities.py`. As menções ao `.env.example` foram mantidas.
+
+## 8. Histórico de alterações (17/10/2026)
+
+Mudanças feitas hoje, em ordem cronológica. Horário de Brasília (UTC-03:00).
+O horário de cada bloco é o do registro no README; o commit `940ce68` ("mudança visual", 03:36) já inclui a maior parte do que está listado até ali.
+
+### 03:36 - commit `940ce68` "mudança visual"
+
+- **Configurações** (`settings.html`, `settings.js`, `theme.js`): menu de seções fixo com destaque da seção visível, troca de tema com revelação circular (View Transitions), formulário de senha recolhido, selo de status do 2FA (`two-factor.js`) e links de privacidade em lista.
+- **Perfil** (`account.html`, `account.js`): prévia ao vivo com o balão da IA, avatar com efeito de entrada, interesses animados, barra "alterações não salvas" e rotação de avatares ilustrados no celular.
+- **Movimento** (`app.css`): tokens de duração e curva (`--dur-*`, `--ease-*`); a regra antiga `transition: none` foi substituída; bloco respeita `prefers-reduced-motion`.
+- **Conversa e personalidades** (`chat.js`, `chats_api.py`, `schema.sql`): nova coluna `messages.personality` gravada em cada resposta da IA (e na troca do MathIAs para o TrashTalker). Histórico antigo sem a coluna usa a personalidade atual da conversa. Avatares recortados em `public/avatars/persona-*.svg`.
+- **Tela inicial** (`dashboard.html`, `chat.js`): saudação com o nome da pessoa e brilho na cor da personalidade escolhida. Os cards de personalidade e as sugestões foram removidos depois, a pedido do usuário.
+- **Landing** (`landing-motion.js`, `landing-motion.css`): o início da animação do manifesto foi separado do pin, para as palavras acenderem quando a frase entra na tela. Em até 860px a seção usa `100svh`.
+
+### Sem commit ainda (após 03:36)
+
+- **Perfil, polish** (`account.html`, `account.js`, `app.css`):
+  - prévia fixa no topo, com o avatar como botão de trocar foto;
+  - seção "Sua foto" com uma fileira de avatares que rola na horizontal, em qualquer largura;
+  - interesses sugeridos sem repetição nos chips, que mostram só os criados pela pessoa;
+  - barra de salvar com "Alterações não salvas", botão **Desfazer** (sem recarregar a página) e **Salvar**;
+  - títulos e dicas encurtados; barra do topo com "Seu perfil".
+- **Migração do banco:** antes de publicar, rode no banco de produção `ALTER TABLE messages ADD COLUMN IF NOT EXISTS personality TEXT;` (ou o `backend/schema.sql` inteiro, que é idempotente).

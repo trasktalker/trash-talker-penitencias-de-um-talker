@@ -45,7 +45,7 @@ function initAccountForm(form, user) {
   var avatarImageInput = document.getElementById("avatar-image-input");
   var avatarTrigger = document.getElementById("avatar-trigger");
   avatarImageInput.value = user.image || "";
-  avatarTrigger.innerHTML = renderAvatarHTML(user.image, user.name, 96);
+  avatarTrigger.innerHTML = renderAvatarHTML(user.image, user.name, 56);
 
   // --- Apelido, pronome e interesses (banco de dados) ---
 
@@ -77,18 +77,14 @@ function initAccountForm(form, user) {
   pronounInput.value = user.pronoun || "";
 
   var newestTag = null; // só o chip recém-adicionado anima a entrada
+  var SUGGESTED = Array.prototype.map.call(document.querySelectorAll(".tag-suggestion"), function (b) { return b.dataset.tag; });
 
   function renderTags() {
     tagsContainer.innerHTML = "";
-    if (interests.length === 0) {
-      var empty = document.createElement("span");
-      empty.className = "tag-empty";
-      empty.textContent =
-        "Nenhum interesse adicionado. Selecione abaixo ou digite um novo.";
-      tagsContainer.appendChild(empty);
-      return;
-    }
-    interests.forEach(function (tag) {
+    // Os sugeridos já aparecem marcados na grade; aqui ficam só os criados pela pessoa.
+    var custom = interests.filter(function (t) { return SUGGESTED.indexOf(t) === -1; });
+    tagsContainer.hidden = custom.length === 0;
+    custom.forEach(function (tag) {
       var chip = document.createElement("span");
       chip.className = "tag-chip" + (tag === newestTag ? " tag-new" : "");
       chip.textContent = tag + " ";
@@ -169,6 +165,9 @@ function initAccountForm(form, user) {
   avatarTrigger.addEventListener("click", function () {
     avatarFileInput.click();
   });
+  document.getElementById("avatar-upload-btn").addEventListener("click", function () {
+    avatarFileInput.click();
+  });
 
   avatarFileInput.addEventListener("change", function () {
     var file = avatarFileInput.files && avatarFileInput.files[0];
@@ -176,7 +175,7 @@ function initAccountForm(form, user) {
     shrinkAvatarPhoto(file)
       .then(function (dataUrl) {
         avatarImageInput.value = dataUrl;
-        avatarTrigger.innerHTML = renderAvatarHTML(dataUrl, user.name, 96);
+        avatarTrigger.innerHTML = renderAvatarHTML(dataUrl, user.name, 56);
         popAvatar();
         syncAvatars();
       })
@@ -223,12 +222,6 @@ function initAccountForm(form, user) {
 
   function refresh() {
     var who = displayNameInput.value.trim() || nameInput.value.trim() || "você";
-    var previewAvatar = document.getElementById("preview-avatar");
-    var avatarMarkup = renderAvatarHTML(avatarImageInput.value, nameInput.value || user.name, 64);
-    if (previewAvatar.dataset.markup !== avatarMarkup) {
-      previewAvatar.dataset.markup = avatarMarkup;
-      previewAvatar.innerHTML = avatarMarkup;
-    }
     setText(document.getElementById("preview-name"), who);
     setText(document.getElementById("preview-pronoun"), pronounInput.value.trim());
     var tagsEl = document.getElementById("preview-tags");
@@ -256,11 +249,15 @@ function initAccountForm(form, user) {
 
   syncAvatars();
   initialSnapshot = snapshot();
+  var initial = {
+    name: nameInput.value, image: avatarImageInput.value, displayName: displayNameInput.value,
+    pronoun: pronounInput.value, interests: interests.slice(),
+  };
   document.querySelectorAll(".illustrated-avatar-btn").forEach(function (btn) {
     btn.addEventListener("click", function () {
       var id = btn.dataset.avatarId;
       avatarImageInput.value = "avatar:" + id;
-      avatarTrigger.innerHTML = renderAvatarHTML(avatarImageInput.value, user.name, 96);
+      avatarTrigger.innerHTML = renderAvatarHTML(avatarImageInput.value, user.name, 56);
       popAvatar();
       syncAvatars();
     });
@@ -268,8 +265,18 @@ function initAccountForm(form, user) {
 
   var cancelBtn = document.getElementById("account-cancel");
   if (cancelBtn) {
+    // Desfaz as alterações sem recarregar (a pessoa não perde a posição na tela).
     cancelBtn.addEventListener("click", function () {
-      window.location.reload();
+      nameInput.value = initial.name;
+      displayNameInput.value = initial.displayName;
+      pronounInput.value = initial.pronoun;
+      avatarImageInput.value = initial.image;
+      avatarTrigger.innerHTML = renderAvatarHTML(initial.image, user.name, 56);
+      interests = initial.interests.slice();
+      newestTag = null;
+      renderTags();
+      syncSuggestions();
+      syncAvatars();
     });
   }
 
