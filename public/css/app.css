@@ -2423,3 +2423,10 @@ html.theme-vt::view-transition-new(root) { z-index: 1; }
 @media (min-width: 640px) { .account-page .avatar-menu .illustrated-avatars { grid-template-columns: repeat(6, 48px); gap: .5rem; } }
 .avatar-trigger { overflow: visible; }
 .avatar-trigger::after { inset: auto -2px -2px auto; display: block; padding: 0; opacity: 1; }
+
+/* Menu do avatar: abre dentro do fluxo da página (empurra o resto para baixo), sem sobrepor os campos. */
+.account-page .avatar-picker { flex-wrap: wrap; }
+.avatar-menu-wrap { display: contents; }
+.avatar-trigger { order: 1; }
+.avatar-picker > .field-hint { order: 2; }
+.avatar-menu { order: 3; position: static; flex: 0 0 100%; width: auto; max-width: none; justify-items: center; box-shadow: none; background: var(--card); animation: none; }
