@@ -76,6 +76,8 @@ function initAccountForm(form, user) {
   displayNameInput.value = user.display_name || legacyLocal.displayName || "";
   pronounInput.value = user.pronoun || "";
 
+  var newestTag = null; // só o chip recém-adicionado anima a entrada
+
   function renderTags() {
     tagsContainer.innerHTML = "";
     if (interests.length === 0) {
@@ -88,23 +90,31 @@ function initAccountForm(form, user) {
     }
     interests.forEach(function (tag) {
       var chip = document.createElement("span");
-      chip.className = "tag-chip";
+      chip.className = "tag-chip" + (tag === newestTag ? " tag-new" : "");
       chip.textContent = tag + " ";
       var remove = document.createElement("button");
       remove.type = "button";
       remove.textContent = "×";
       remove.setAttribute("aria-label", "Remover interesse: " + tag);
       remove.addEventListener("click", function () {
-        interests = interests.filter(function (t) {
-          return t !== tag;
-        });
-        renderTags();
-        syncSuggestions();
-        tagInput.focus();
+        newestTag = null;
+        chip.classList.add("leaving");
+        var done = function () {
+          interests = interests.filter(function (t) {
+            return t !== tag;
+          });
+          renderTags();
+          syncSuggestions();
+          tagInput.focus();
+        };
+        // Espera a saída animada (160ms); sem animação (movimento reduzido), remove já.
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) done();
+        else setTimeout(done, 160);
       });
       chip.appendChild(remove);
       tagsContainer.appendChild(chip);
     });
+    refresh();
   }
 
   function syncSuggestions() {
@@ -119,6 +129,7 @@ function initAccountForm(form, user) {
       var tag = btn.dataset.tag;
       if (interests.indexOf(tag) === -1) {
         interests.push(tag);
+        newestTag = tag;
       } else {
         interests = interests.filter(function (t) {
           return t !== tag;
@@ -133,6 +144,7 @@ function initAccountForm(form, user) {
     var value = tagInput.value.trim();
     if (value && interests.indexOf(value) === -1) {
       interests.push(value);
+      newestTag = value;
       tagInput.value = "";
       renderTags();
       syncSuggestions();
@@ -165,6 +177,7 @@ function initAccountForm(form, user) {
       .then(function (dataUrl) {
         avatarImageInput.value = dataUrl;
         avatarTrigger.innerHTML = renderAvatarHTML(dataUrl, user.name, 96);
+        popAvatar();
         syncAvatars();
       })
       .catch(function () {
@@ -179,13 +192,76 @@ function initAccountForm(form, user) {
       btn.classList.toggle("selected", selected);
       btn.setAttribute("aria-pressed", String(selected));
     });
+    refresh();
   }
+
+  // Reinicia a animação "pop" do avatar grande (reflow força o restart).
+  function popAvatar() {
+    avatarTrigger.classList.remove("pop");
+    void avatarTrigger.offsetWidth;
+    avatarTrigger.classList.add("pop");
+  }
+
+  // --- Prévia ao vivo + barra de "alterações não salvas" ---
+
+  var saveBar = document.getElementById("save-bar");
+  function snapshot() {
+    return JSON.stringify([
+      nameInput.value, avatarImageInput.value, displayNameInput.value,
+      pronounInput.value, interests,
+    ]);
+  }
+  var initialSnapshot = null;
+
+  function setText(el, text) {
+    if (el.textContent === text) return;
+    el.textContent = text;
+    el.classList.remove("swap");
+    void el.offsetWidth;
+    el.classList.add("swap");
+  }
+
+  function refresh() {
+    var who = displayNameInput.value.trim() || nameInput.value.trim() || "você";
+    var previewAvatar = document.getElementById("preview-avatar");
+    var avatarMarkup = renderAvatarHTML(avatarImageInput.value, nameInput.value || user.name, 64);
+    if (previewAvatar.dataset.markup !== avatarMarkup) {
+      previewAvatar.dataset.markup = avatarMarkup;
+      previewAvatar.innerHTML = avatarMarkup;
+    }
+    setText(document.getElementById("preview-name"), who);
+    setText(document.getElementById("preview-pronoun"), pronounInput.value.trim());
+    var tagsEl = document.getElementById("preview-tags");
+    tagsEl.textContent = "";
+    interests.slice(0, 4).forEach(function (t) {
+      var chip = document.createElement("span");
+      chip.textContent = t;
+      tagsEl.appendChild(chip);
+    });
+    setText(
+      document.getElementById("preview-bubble"),
+      interests.length
+        ? "E aí, " + who + "! Bora falar de " + interests[0] + "?"
+        : "E aí, " + who + "! Sobre o que vamos trocar ideia?",
+    );
+    if (initialSnapshot) {
+      var dirty = snapshot() !== initialSnapshot;
+      saveBar.classList.toggle("visible", dirty);
+      saveBar.inert = !dirty;
+    }
+  }
+  [nameInput, displayNameInput, pronounInput].forEach(function (input) {
+    input.addEventListener("input", refresh);
+  });
+
   syncAvatars();
+  initialSnapshot = snapshot();
   document.querySelectorAll(".illustrated-avatar-btn").forEach(function (btn) {
     btn.addEventListener("click", function () {
       var id = btn.dataset.avatarId;
       avatarImageInput.value = "avatar:" + id;
       avatarTrigger.innerHTML = renderAvatarHTML(avatarImageInput.value, user.name, 96);
+      popAvatar();
       syncAvatars();
     });
   });
@@ -222,6 +298,8 @@ function initAccountForm(form, user) {
     })
       .then(function () {
         successBanner.hidden = false;
+        submitBtn.textContent = "Salvo ✓";
+        submitBtn.classList.add("saved");
         // Recarrega a página pra refletir os dados salvos em todo lugar
         // (ex: nome/avatar/apelido no chip da sidebar) sem precisar de
         // F5 manual.

@@ -74,7 +74,15 @@
           <h1>Configurações</h1>
           <p class="muted">Escolha o tema, altere sua senha e cuide dos seus dados.</p>
 
-          <div class="card">
+          <nav class="settings-nav" aria-label="Seções das configurações">
+            <a href="#sec-conta">Conta</a>
+            <a href="#sec-aparencia">Aparência</a>
+            <a href="#sec-senha">Senha</a>
+            <a href="#two-factor-card">Segurança</a>
+            <a href="#sec-dados">Dados</a>
+          </nav>
+
+          <div class="card" id="sec-conta" style="--i:0">
             <h2>Sua conta</h2>
             <p class="muted">Informações da sua conta no Trash Talker.</p>
             <div class="field-row-2 account-info-box">
@@ -89,23 +97,25 @@
             </div>
           </div>
 
-          <div class="card">
+          <div class="card" id="sec-aparencia" style="--i:1">
             <h2>Aparência</h2>
             <p class="muted">Personalize as cores e o tema visual da aplicação.</p>
             <!-- js/theme.js já cuida destes botões em qualquer página. -->
             <div class="theme-buttons">
               <button type="button" data-theme-btn="light">
                 <svg class="icon" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="3.4"></circle><line x1="10" y1="2.3" x2="10" y2="4.2"></line><line x1="10" y1="15.8" x2="10" y2="17.7"></line><line x1="2.3" y1="10" x2="4.2" y2="10"></line><line x1="15.8" y1="10" x2="17.7" y2="10"></line><line x1="4.6" y1="4.6" x2="5.9" y2="5.9"></line><line x1="14.1" y1="14.1" x2="15.4" y2="15.4"></line><line x1="15.4" y1="4.6" x2="14.1" y2="5.9"></line><line x1="5.9" y1="14.1" x2="4.6" y2="15.4"></line></svg>
+                <span class="theme-preview theme-preview-light" aria-hidden="true"><i></i><b></b><b></b></span>
                 Claro
               </button>
               <button type="button" data-theme-btn="dark">
                 <svg class="icon" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 12.3A7 7 0 1 1 8.7 3.6a5.4 5.4 0 0 0 7.8 8.7Z"></path></svg>
+                <span class="theme-preview theme-preview-dark" aria-hidden="true"><i></i><b></b><b></b></span>
                 Escuro
               </button>
             </div>
           </div>
 
-          <div class="card">
+          <div class="card" id="sec-senha" style="--i:2">
             <h2>Alterar senha</h2>
             <p class="muted">Atualize a senha usada para entrar na sua conta.</p>
 
@@ -114,6 +124,9 @@
               Senha alterada com sucesso.
             </div>
 
+            <button type="button" id="password-toggle" class="btn-outline password-toggle" aria-expanded="false" aria-controls="password-collapse">Alterar minha senha</button>
+            <div id="password-collapse" class="collapse">
+            <div class="collapse-inner">
             <form id="password-form" class="auth-form">
               <div class="field">
                 <label for="current-password">Senha atual</label>
@@ -133,12 +146,15 @@
               </div>
 
               <div class="form-actions">
-                <button type="submit" class="btn-primary">Salvar Nova senha</button>
+                <button type="submit" class="btn-primary">Salvar nova senha</button>
+                <button type="button" class="btn-outline" id="password-cancel">Cancelar</button>
               </div>
             </form>
+            </div>
+            </div>
           </div>
 
-          <section class="card" id="two-factor-card" aria-labelledby="two-factor-title">
+          <section class="card" id="two-factor-card" style="--i:3" aria-labelledby="two-factor-title">
             <h2 id="two-factor-title">Autenticação em dois fatores</h2>
             <p class="muted">Proteja sua conta com um código do Google Authenticator ao entrar.</p>
             <p id="two-factor-status" role="status">Consultando proteção da conta...</p>
@@ -201,18 +217,20 @@
             </div>
           </section>
 
-          <div class="card">
+          <div class="card" id="sec-dados" style="--i:4">
             <h2>Privacidade e dados</h2>
             <p class="muted">Consulte nossos documentos legais ou exporte uma cópia dos seus dados.</p>
+            <ul class="legal-links">
+              <li><a href="/privacy" target="_blank" rel="noopener">Política de Privacidade <span aria-hidden="true">↗</span></a></li>
+              <li><a href="/terms" target="_blank" rel="noopener">Termos de Uso <span aria-hidden="true">↗</span></a></li>
+              <li><a href="/cookies" target="_blank" rel="noopener">Política de Cookies <span aria-hidden="true">↗</span></a></li>
+            </ul>
             <div class="card-actions">
-              <a href="/privacy" target="_blank" rel="noopener" class="btn-outline">Política de Privacidade</a>
-              <a href="/terms" target="_blank" rel="noopener" class="btn-outline">Termos de Uso</a>
-              <a href="/cookies" target="_blank" rel="noopener" class="btn-outline">Política de Cookies</a>
               <button type="button" id="export-data-btn" class="btn-outline">Exportar meus dados</button>
             </div>
           </div>
 
-          <div class="account-delete-action">
+          <div class="account-delete-action" style="--i:5">
             <p id="delete-account-help" class="muted">Excluir sua conta apaga seu perfil e todas as conversas. Essa ação não pode ser desfeita.</p>
             <button type="button" id="delete-account-btn" class="btn-destructive" aria-describedby="delete-account-help">
               Excluir conta

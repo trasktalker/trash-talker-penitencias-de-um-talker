@@ -71,6 +71,18 @@
 
       <main class="app-content" id="main-content" tabindex="-1">
         <div class="account-page">
+          <h1 class="account-title">Seu perfil</h1>
+          <p class="muted account-lead">É assim que os personagens vão te enxergar nas conversas.</p>
+
+          <div class="profile-preview" aria-hidden="true">
+            <div class="profile-preview-avatar" id="preview-avatar"></div>
+            <div class="profile-preview-body">
+              <p class="profile-preview-name"><span id="preview-name"></span> <small id="preview-pronoun"></small></p>
+              <div id="preview-tags" class="profile-preview-tags"></div>
+              <p class="profile-preview-bubble" id="preview-bubble"></p>
+            </div>
+          </div>
+
           <!-- Banners de erro/sucesso: no original vinham de query params
                (?error=...&success=1) porque o servidor redirecionava
                depois do POST. Agora js/account.js só mostra/esconde
@@ -82,7 +94,7 @@
 
           <form id="account-form" class="account-form">
             <p class="field-hint" id="avatar-help">Avatar (opcional). Escolha uma imagem ou mantenha o avatar padrão.</p>
-            <div class="avatar-picker">
+            <div class="avatar-picker" style="--i:0">
               <!-- Preenchido por js/account.js com renderAvatarHTML(). -->
               <button type="button" id="avatar-trigger" class="avatar-trigger" aria-label="Alterar avatar" aria-describedby="avatar-help"></button>
               <input type="file" id="avatar-file-input" accept="image/*" hidden />
@@ -110,25 +122,25 @@
               </div>
             </div>
 
-            <div class="field">
+            <div class="field" style="--i:1">
               <label for="name">Nome da conta</label>
               <input id="name" name="name" type="text" required />
               <span class="field-hint">Obrigatório para identificar sua conta.</span>
             </div>
 
-            <div class="field">
+            <div class="field" style="--i:2">
               <label for="displayName">Apelido (opcional)</label>
               <input id="displayName" type="text" placeholder="Como quer ser chamado" />
               <span class="field-hint">Se preferir, escolha como quer ser chamado nas conversas.</span>
             </div>
 
-            <div class="field">
+            <div class="field" style="--i:3">
               <label for="pronoun">Pronome (opcional)</label>
               <input id="pronoun" type="text" placeholder="Ex.: ele/dele, ela/dela, elu/delu" />
               <span class="field-hint">A IA vai usar esse pronome para se referir a você</span>
             </div>
 
-            <div class="field">
+            <div class="field" style="--i:4">
               <label for="tag-input">Interesses (opcionais)</label>
               <span class="field-hint">Você pode compartilhar assuntos que gosta de conversar.</span>
               <div id="interest-tags" class="tag-list"></div>
@@ -146,7 +158,7 @@
               </div>
             </div>
 
-            <div class="form-actions">
+            <div class="form-actions save-bar" id="save-bar" inert>
               <button type="button" id="account-cancel" class="btn-outline">Cancelar</button>
               <button type="submit" class="btn-primary">Salvar Alterações</button>
             </div>

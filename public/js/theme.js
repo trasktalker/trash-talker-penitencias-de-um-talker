@@ -34,6 +34,24 @@ window.addEventListener('storage', function (event) {
 document.addEventListener('DOMContentLoaded', function () {
   applyTheme();
   document.querySelectorAll('[data-theme-btn]').forEach(function (btn) {
-    btn.addEventListener('click', function () { setTheme(btn.dataset.themeBtn); });
+    btn.addEventListener('click', function (e) {
+      var next = btn.dataset.themeBtn;
+      if (next === (document.documentElement.classList.contains('dark') ? 'dark' : 'light')) return;
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!document.startViewTransition || reduce) { setTheme(next); return; }
+      // Revelação circular a partir do ponto do clique.
+      var box = btn.getBoundingClientRect();
+      var x = e.clientX || box.left + box.width / 2, y = e.clientY || box.top + box.height / 2;
+      var r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+      document.documentElement.classList.add('theme-vt');
+      var t = document.startViewTransition(function () { setTheme(next); });
+      t.finished.finally(function () { document.documentElement.classList.remove('theme-vt'); });
+      t.ready.then(function () {
+        document.documentElement.animate(
+          { clipPath: ['circle(0 at ' + x + 'px ' + y + 'px)', 'circle(' + r + 'px at ' + x + 'px ' + y + 'px)'] },
+          { duration: 520, easing: 'cubic-bezier(.2,.8,.2,1)', pseudoElement: '::view-transition-new(root)' }
+        );
+      }).catch(function () {});
+    });
   });
 });

@@ -54,9 +54,19 @@
   m.innerHTML = m.textContent.trim().split(/\s+/).map(function (w) {
     return '<span class="lm-word">' + w + "</span>";
   }).join(" ");
+  // O pin só começa com a seção no topo, mas as palavras já acendem quando a
+  // frase entra na tela (senão ela fica apagada durante a rolagem de chegada).
+  var pinLength = function () { return Math.round(window.innerHeight * 1.5); };
+  ScrollTrigger.create({
+    trigger: ".lm-manifesto", start: "top top",
+    end: function () { return "+=" + pinLength(); }, pin: true, invalidateOnRefresh: true
+  });
   var manifesto = gsap.timeline({
     defaults: { ease: "none" },
-    scrollTrigger: { trigger: ".lm-manifesto", start: "top top", end: "+=150%", scrub: 0.5, pin: true }
+    scrollTrigger: {
+      trigger: ".lm-manifesto", start: "top 50%", scrub: 0.5, invalidateOnRefresh: true,
+      end: function () { return "top+=" + pinLength() + " top"; }
+    }
   });
   manifesto.to(".lm-word", { opacity: 1, stagger: 0.1 }, 0);
   var total = manifesto.duration();

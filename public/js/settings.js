@@ -10,7 +10,27 @@ document.addEventListener("DOMContentLoaded", function () {
   loadAccountInfo();
   wirePasswordForm();
   wireExportDataButton();
+  wireSectionNav();
 });
+
+// Realça no menu a seção que está na tela (scroll-spy simples).
+function wireSectionNav() {
+  var links = document.querySelectorAll(".settings-nav a");
+  if (!links.length || !("IntersectionObserver" in window)) return;
+  var byId = {};
+  links.forEach(function (a) { byId[a.getAttribute("href").slice(1)] = a; });
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (!entry.isIntersecting) return;
+      links.forEach(function (a) { a.classList.remove("active"); });
+      byId[entry.target.id].classList.add("active");
+    });
+  }, { rootMargin: "-20% 0px -65% 0px" });
+  Object.keys(byId).forEach(function (id) {
+    var section = document.getElementById(id);
+    if (section) observer.observe(section);
+  });
+}
 
 function wireDeleteAccountButton() {
   var deleteBtn = document.getElementById("delete-account-btn");
@@ -130,6 +150,26 @@ function wirePasswordForm() {
     );
   });
 
+  // O formulário fica recolhido; abre/fecha animando a altura (ver .collapse).
+  var toggleBtn = document.getElementById("password-toggle");
+  var collapse = document.getElementById("password-collapse");
+  function setPasswordOpen(open) {
+    collapse.classList.toggle("open", open);
+    toggleBtn.setAttribute("aria-expanded", String(open));
+    toggleBtn.hidden = open;
+    // inert tira os campos recolhidos da ordem de tabulação.
+    collapse.inert = !open;
+    if (open) document.getElementById("current-password").focus();
+    else toggleBtn.focus();
+  }
+  collapse.inert = true;
+  toggleBtn.addEventListener("click", function () { setPasswordOpen(true); });
+  document.getElementById("password-cancel").addEventListener("click", function () {
+    form.reset();
+    errorBanner.hidden = true;
+    setPasswordOpen(false);
+  });
+
   form.addEventListener("submit", function (e) {
     e.preventDefault();
     errorBanner.hidden = true;
@@ -155,6 +195,7 @@ function wirePasswordForm() {
       .then(function () {
         form.reset();
         successBanner.hidden = false;
+        setPasswordOpen(false);
       })
       .catch(function (err) {
         errorBanner.textContent = err.message;

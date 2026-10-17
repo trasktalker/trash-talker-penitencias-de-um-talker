@@ -72,7 +72,7 @@ body.lm { overflow-x: clip; }
 @media (max-width: 860px) {
   .lm-hero-grid { grid-template-columns: minmax(0, 1fr); }
   .lm-hero-art { max-width: 20rem; }
-  .lm-manifesto { min-height: 80vh; }
+  .lm-manifesto { min-height: 100vh; min-height: 100svh; }
   .lm-float:nth-child(n+5) { display: none; }
   .lm-float { width: 70px; opacity: .3; }
   .lm-step { grid-template-columns: minmax(0, 1fr); gap: .5rem; }

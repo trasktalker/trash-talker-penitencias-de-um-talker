@@ -98,6 +98,7 @@ def test_enviar_mensagem_persiste_pergunta_e_resposta(cliente, conversa, ia_fals
     corpo = resposta.get_json()
     assert corpo["userMessage"]["content"] == "Travei numa conversa hoje"
     assert corpo["assistantMessage"]["content"] == "Resposta simulada do TrashTalker."
+    assert corpo["assistantMessage"]["personality"] == "trashtalker"
 
     salvas = db.query("SELECT role, content FROM messages ORDER BY created_at ASC")
     assert [m["role"] for m in salvas] == ["user", "assistant"]

@@ -89,6 +89,10 @@ CREATE TABLE IF NOT EXISTS messages (
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- Quem respondeu (chave de personalities.py). NULL nas mensagens do usuário e
+-- nas respostas antigas; o frontend usa a personalidade da conversa nesses casos.
+ALTER TABLE messages ADD COLUMN IF NOT EXISTS personality TEXT;
+
 CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id);
 CREATE INDEX IF NOT EXISTS idx_chats_user_id ON chats(user_id);
 CREATE INDEX IF NOT EXISTS idx_messages_chat_id ON messages(chat_id);

@@ -44,6 +44,7 @@ from backend.db import execute, get_owned_chat, new_id, query, query_one
 from backend.personalities import (
     DEFAULT_PERSONALITY,
     LAZY_HANDOFF_TO,
+    LAZY_PERSONALITY,
     PERSONALITIES,
     PERSONALITIES_PUBLIC,
     get_handoff_line,
@@ -228,15 +229,15 @@ def send_message(chat_id):
             (personality, chat_id),
         )
         handoff_message = query_one(
-            "INSERT INTO messages (id, chat_id, role, content) "
-            "VALUES (%s, %s, %s, %s) RETURNING *",
-            (new_id(), chat_id, "assistant", handoff_line),
+            "INSERT INTO messages (id, chat_id, role, content, personality) "
+            "VALUES (%s, %s, %s, %s, %s) RETURNING *",
+            (new_id(), chat_id, "assistant", handoff_line, LAZY_PERSONALITY),
         )
 
     assistant_message = query_one(
-        "INSERT INTO messages (id, chat_id, role, content) "
-        "VALUES (%s, %s, %s, %s) RETURNING *",
-        (new_id(), chat_id, "assistant", reply_text),
+        "INSERT INTO messages (id, chat_id, role, content, personality) "
+        "VALUES (%s, %s, %s, %s, %s) RETURNING *",
+        (new_id(), chat_id, "assistant", reply_text, personality),
     )
     chat = query_one(
         "UPDATE chats SET updated_at = now() WHERE id = %s RETURNING *", (chat_id,)

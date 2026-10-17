@@ -41,6 +41,13 @@ document.addEventListener("DOMContentLoaded", function () {
     el("error").hidden = false;
   }
 
+  // data-state alimenta o selo colorido (CSS); o texto continua sendo a fonte da verdade.
+  function setStatus(text) {
+    var node = el("status");
+    node.textContent = text;
+    node.dataset.state = /^Ativada/.test(text) ? "on" : /^Desativada/.test(text) ? "off" : "error";
+  }
+
   async function loadStatus() {
     el("retry").hidden = true;
     el("error").hidden = true;
@@ -49,16 +56,16 @@ document.addEventListener("DOMContentLoaded", function () {
       var data = await apiFetch("/api/2fa/status");
       enabled = data.enabled;
       available = data.available;
-      el("status").textContent = enabled
+      setStatus(enabled
         ? "Ativada. Códigos de recuperação restantes: " + data.recoveryCodesRemaining + "."
-        : "Desativada. Você pode ativar esta proteção quando quiser.";
+        : "Desativada. Você pode ativar esta proteção quando quiser.");
       showActions(false);
       if (!available) {
         showError("Autenticação em dois fatores temporariamente indisponível. Tente mais tarde.");
         el("retry").hidden = false;
       }
     } catch (err) {
-      el("status").textContent = "Não foi possível consultar a proteção da conta.";
+      setStatus("Não foi possível consultar a proteção da conta.");
       showError(err.message);
       el("retry").hidden = false;
     }
@@ -110,7 +117,7 @@ document.addEventListener("DOMContentLoaded", function () {
     clearSensitive();
     enabled = true;
     recoveryCodes = codes;
-    el("status").textContent = "Ativada. Seus outros dispositivos foram desconectados.";
+    setStatus("Ativada. Seus outros dispositivos foram desconectados.");
     codes.forEach(function (code) {
       var item = document.createElement("li");
       var text = document.createElement("code");
@@ -152,7 +159,7 @@ document.addEventListener("DOMContentLoaded", function () {
       } else {
         enabled = false;
         showActions(false);
-        el("status").textContent = "Desativada. Seus outros dispositivos foram desconectados.";
+        setStatus("Desativada. Seus outros dispositivos foram desconectados.");
       }
     });
   });

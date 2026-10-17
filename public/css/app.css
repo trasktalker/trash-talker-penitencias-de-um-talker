@@ -2234,3 +2234,177 @@ button, input, textarea, select { font-family: inherit; }
 /* "Excluir conta" vira um card de alerta, como o antigo .card-danger. */
 .settings-page .account-delete-action { padding: 1.5rem; border: 1px solid color-mix(in srgb, var(--destructive) 35%, transparent); border-radius: var(--radius-panel); background: var(--card); }
 @media (min-width: 640px) { .settings-page .card, .settings-page .account-delete-action { padding: 2rem; } }
+
+/* ==========================================================================
+   Movimento + telas de Configurações e Perfil
+   Retorno visual curto (120-320ms), sempre desligado por prefers-reduced-motion
+   (bloco global acima). Só transform/opacity animam, exceto o .collapse.
+   ========================================================================== */
+:root {
+  --ease-out: cubic-bezier(.2, .8, .2, 1);
+  --ease-spring: cubic-bezier(.34, 1.56, .64, 1);
+  --dur-1: 120ms; --dur-2: 200ms; --dur-3: 320ms;
+}
+
+/* Substitui o antigo "transition: none": hover, foco e clique voltam a responder. */
+button, a, input, textarea {
+  transition: background-color var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out),
+    color var(--dur-1) var(--ease-out), box-shadow var(--dur-2) var(--ease-out), transform var(--dur-1) var(--ease-out);
+}
+:is(.btn-primary, .btn-outline, .btn-destructive, .tag-suggestion, .theme-buttons button, .illustrated-avatar-btn):active { transform: scale(.97); }
+@media (hover: hover) {
+  :is(.btn-primary, .btn-outline, .btn-destructive):hover { transform: translateY(-1px); }
+  .illustrated-avatar-btn:hover { transform: translateY(-3px) scale(1.06); }
+  .tag-suggestion:hover { transform: translateY(-1px); }
+}
+
+/* Entrada escalonada das seções (--i vem do HTML). */
+@keyframes section-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.settings-page > :is(.card, .account-delete-action), .account-form > :is(.field, .avatar-picker), .profile-preview {
+  animation: section-in var(--dur-3) var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 60ms);
+}
+@keyframes banner-in { from { opacity: 0; transform: translateY(-6px) scale(.98); } to { opacity: 1; transform: none; } }
+.banner:not([hidden]) { animation: banner-in var(--dur-2) var(--ease-out); }
+
+/* ---------- Configurações ---------- */
+.settings-nav { position: sticky; top: 0; z-index: 5; display: flex; gap: .5rem; overflow-x: auto; padding: .5rem 0; margin-block: -.25rem .25rem; background: var(--background); scrollbar-width: none; }
+.settings-nav::-webkit-scrollbar { display: none; }
+.settings-nav a { flex: none; display: inline-flex; align-items: center; min-height: 44px; padding: 0 1rem; border: 1px solid var(--border); border-radius: 999px; background: var(--card); text-decoration: none; font-size: .9rem; font-weight: 600; }
+.settings-nav a:hover { background: var(--accent); }
+.settings-nav a.active { background: var(--primary); border-color: var(--primary); color: var(--on-action); }
+html { scroll-behavior: smooth; }
+.settings-page .card { scroll-margin-top: 4.5rem; }
+
+/* Prévia do tema: miniatura da interface (barra lateral + balões). */
+.theme-buttons button { flex-direction: column; padding: .75rem; min-height: 0; }
+.theme-preview { position: relative; display: grid; grid-template-columns: 28% 1fr; gap: 6px; width: 100%; max-width: 11rem; aspect-ratio: 16 / 9; padding: 6px; border-radius: .6rem; overflow: hidden; transition: transform var(--dur-2) var(--ease-spring); }
+.theme-preview i { grid-row: 1 / 3; border-radius: .35rem; }
+.theme-preview b { align-self: end; height: 40%; border-radius: .5rem .5rem .5rem .15rem; }
+.theme-preview b + b { align-self: start; margin-left: 25%; border-radius: .5rem .5rem .15rem .5rem; }
+.theme-preview-light { background: #fcf4cf; } .theme-preview-light i { background: #fdf8e3; box-shadow: 0 0 0 1px #e6d8a7; }
+.theme-preview-light b { background: #fff; box-shadow: 0 0 0 1px #e6d8a7; } .theme-preview-light b + b { background: #f7d834; box-shadow: none; }
+.theme-preview-dark { background: #2a221f; } .theme-preview-dark i { background: #241d1a; box-shadow: 0 0 0 1px #3b302c; }
+.theme-preview-dark b { background: #423631; } .theme-preview-dark b + b { background: #eb6a40; }
+.theme-buttons button.active .theme-preview { transform: scale(1.03); }
+
+/* Seção recolhível: anima altura via grid-template-rows (sem JS de medida). */
+.collapse { display: grid; grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows var(--dur-3) var(--ease-out), opacity var(--dur-2) var(--ease-out); }
+.collapse.open { grid-template-rows: 1fr; opacity: 1; }
+.collapse-inner { overflow: hidden; min-height: 0; padding: 4px; margin: -4px; }
+.password-toggle { align-self: flex-start; }
+
+/* Selo de status do 2FA. */
+#two-factor-status { display: inline-flex; align-items: center; gap: .6rem; align-self: flex-start; padding: .45rem .9rem; border-radius: 999px; background: var(--muted); font-size: .9rem; font-weight: 600; }
+#two-factor-status::before { content: ""; flex: none; width: .65rem; height: .65rem; border-radius: 50%; background: var(--muted-foreground); animation: status-pulse 1.4s ease-in-out infinite; }
+#two-factor-status[data-state]::before { animation: none; }
+#two-factor-status[data-state="on"] { background: color-mix(in srgb, #2e9d57 16%, var(--card)); }
+#two-factor-status[data-state="on"]::before { background: #2e9d57; box-shadow: 0 0 0 4px color-mix(in srgb, #2e9d57 25%, transparent); }
+#two-factor-status[data-state="error"]::before { background: var(--destructive); }
+@keyframes status-pulse { 50% { opacity: .35; transform: scale(.8); } }
+
+.legal-links { display: grid; gap: .25rem; margin: 0; padding: 0; list-style: none; }
+.legal-links a { display: flex; align-items: center; justify-content: space-between; min-height: 44px; padding: 0 .25rem; border-bottom: 1px solid var(--border); text-decoration: none; }
+.legal-links a span { transition: transform var(--dur-2) var(--ease-out); }
+.legal-links a:hover span { transform: translate(3px, -3px); }
+.legal-links a:hover { background: var(--accent); padding-inline: .75rem; }
+
+/* Revelação circular do tema (js/theme.js). */
+html.theme-vt::view-transition-old(root), html.theme-vt::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+html.theme-vt::view-transition-new(root) { z-index: 1; }
+
+/* ---------- Perfil ---------- */
+.account-title { font: 650 28px/1.3 var(--display-font); }
+.account-lead { margin: .25rem 0 1.25rem; }
+.account-page, .account-form { max-width: 46rem; margin-inline: auto; }
+
+.profile-preview { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; padding: 1.25rem; border: 1px solid var(--border); border-radius: var(--radius-panel); background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 14%, var(--card)), var(--card)); }
+.profile-preview-avatar { flex: none; }
+.profile-preview-avatar .avatar { border-radius: 50%; object-fit: cover; }
+.profile-preview-body { display: grid; gap: .5rem; min-width: 0; }
+.profile-preview-name { font-weight: 700; font-size: 1.1rem; overflow-wrap: anywhere; }
+.profile-preview-name small { font-weight: 500; color: var(--muted-foreground); font-size: .85rem; }
+.profile-preview-tags { display: flex; flex-wrap: wrap; gap: .35rem; }
+.profile-preview-tags:empty { display: none; }
+.profile-preview-tags span { padding: .15rem .6rem; border-radius: 999px; background: var(--secondary); font-size: .8rem; }
+.profile-preview-bubble { width: fit-content; max-width: 100%; padding: .6rem .9rem; border-radius: 16px 16px 16px 4px; border-left: 3px solid #eb6a40; background: var(--card); box-shadow: 0 0 0 1px var(--border); font-size: .95rem; line-height: 1.45; }
+@keyframes swap-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.swap { animation: swap-in var(--dur-2) var(--ease-out); }
+
+/* Avatar: dica "Trocar foto" + pop ao mudar. */
+.avatar-trigger { position: relative; overflow: hidden; width: 96px; height: 96px; border-radius: 50%; }
+.avatar-trigger::after { content: "Trocar foto"; position: absolute; inset: 0; display: grid; place-items: end center; padding-bottom: .55rem; background: linear-gradient(to top, rgb(0 0 0 / .62) 0%, transparent 60%); color: #fff; font-size: .72rem; font-weight: 700; opacity: 0; transition: opacity var(--dur-2) var(--ease-out); }
+.avatar-trigger:is(:hover, :focus-visible)::after { opacity: 1; }
+@media (hover: none) { .avatar-trigger::after { opacity: 1; } }
+@keyframes avatar-pop { 0% { transform: scale(.82); } 60% { transform: scale(1.06); } 100% { transform: scale(1); } }
+.avatar-trigger.pop { animation: avatar-pop 420ms var(--ease-spring); }
+.illustrated-avatar-btn { transition: transform var(--dur-2) var(--ease-spring), border-color var(--dur-1), box-shadow var(--dur-2); }
+.illustrated-avatar-btn.selected { transform: scale(1.1); }
+
+/* Celular: avatares ilustrados voltam, numa fileira com rolagem e snap. */
+@media (max-width: 639px) {
+  .account-page .illustrated-avatars { display: flex; width: 100%; overflow-x: auto; gap: .75rem; padding: 6px 4px; scroll-snap-type: x proximity; scrollbar-width: none; }
+  .account-page .illustrated-avatar-btn { flex: none; scroll-snap-align: center; }
+  .account-page .avatar-picker { gap: 1rem; }
+}
+
+/* Interesses: entrada/saída dos chips e ✓ nas sugestões. */
+@keyframes chip-in { from { opacity: 0; transform: scale(.75); } to { opacity: 1; transform: none; } }
+.tag-chip { transition: opacity 160ms, transform 160ms; }
+.tag-chip.tag-new { animation: chip-in var(--dur-2) var(--ease-spring); }
+.tag-chip.leaving { opacity: 0; transform: scale(.75); }
+.tag-suggestion.active::before { content: "✓"; margin-right: .35rem; font-weight: 700; animation: chip-in var(--dur-2) var(--ease-spring); }
+
+/* Barra de "alterações não salvas": só aparece quando há o que salvar. */
+.save-bar { position: sticky; bottom: 0; z-index: 4; padding: .75rem; margin-top: 1rem; border: 1px solid var(--border); border-radius: var(--radius-panel); background: var(--card); box-shadow: 0 -8px 24px color-mix(in srgb, var(--foreground) 12%, transparent); opacity: 0; transform: translateY(120%); visibility: hidden; transition: transform var(--dur-3) var(--ease-spring), opacity var(--dur-2), visibility 0s linear var(--dur-3); }
+.save-bar.visible { opacity: 1; transform: none; visibility: visible; transition-delay: 0s; }
+.save-bar .btn-primary.saved { background: #2e9d57; color: #fff; }
+
+/* ==========================================================================
+   Conversa + tela inicial: cada personalidade tem rosto e cor (--persona).
+   ========================================================================== */
+@property --persona { syntax: "<color>"; inherits: true; initial-value: #d19415; }
+[data-persona="trashtalker"], [data-personality="trashtalker"] { --persona: #d19415; }
+[data-persona="mathias"], [data-personality="mathias"] { --persona: #eb6a40; }
+[data-persona="evaisto"], [data-personality="evaisto"] { --persona: #f7d834; }
+
+/* Balões */
+.msg-avatar { width: 2.25rem; height: 2.25rem; }
+.msg-assistant { grid-template-columns: 2.25rem minmax(0, 1fr); }
+.msg-assistant .msg-avatar { overflow: hidden; border-radius: 0.85rem; background: transparent; box-shadow: none; }
+.msg-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.msg-user .msg-avatar.has-photo { padding: 0; overflow: hidden; background: none; }
+.msg-avatar .avatar { width: 100% !important; height: 100% !important; border-radius: 50%; object-fit: cover; font-size: .8rem; }
+.msg-assistant .msg-content { border-left: 3px solid var(--persona, var(--border)); border-bottom-left-radius: 4px; }
+.msg-author { color: var(--foreground); font-weight: 700; align-self: center; grid-row: 1; }
+.msg-assistant .voice-speak-button { grid-row: 1; grid-column: 2; justify-self: end; align-self: center; min-width: 36px; width: 36px; height: 36px; margin-top: -6px; opacity: .6; }
+.msg-assistant .voice-speak-button:hover, .msg-assistant .voice-speak-button:focus-visible { opacity: 1; }
+.msg-assistant .msg-content { grid-row: 2; }
+@media (max-width: 639px) {
+  .msg-avatar { width: 2rem; height: 2rem; }
+  .msg-assistant { grid-template-columns: 2rem minmax(0, 1fr); }
+}
+
+@keyframes msg-enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.msg-enter { animation: msg-enter var(--dur-3) var(--ease-out); }
+
+/* "Digitando": pontos pulando e rosto respirando. */
+.typing-dots { display: inline-flex; gap: 5px; align-items: center; height: 1.55em; }
+.typing-dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--persona, var(--muted-foreground)); animation: dot-bounce 1.1s ease-in-out infinite; }
+.typing-dots i:nth-child(2) { animation-delay: .15s; }
+.typing-dots i:nth-child(3) { animation-delay: .3s; }
+@keyframes dot-bounce { 0%, 60%, 100% { transform: translateY(0); opacity: .45; } 30% { transform: translateY(-5px); opacity: 1; } }
+@keyframes face-breathe { 50% { transform: scale(1.07); } }
+.msg-typing .msg-avatar { animation: face-breathe 1.6s ease-in-out infinite; }
+.msg-typing .msg-content { padding: .75rem 1rem; }
+
+/* Foto da personalidade na barra do topo. */
+.topbar-title { display: inline-flex; align-items: center; gap: .6rem; }
+.topbar-persona { width: 28px; height: 28px; border-radius: 50%; background: color-mix(in srgb, var(--muted) 70%, transparent); animation: avatar-pop 420ms var(--ease-spring); }
+
+/* ---------- Tela inicial ---------- */
+.welcome-screen { position: relative; isolation: isolate; transition: --persona 400ms var(--ease-out); }
+.welcome-screen::before { content: ""; position: absolute; z-index: -1; inset: 0 0 auto; height: 22rem; background: radial-gradient(60% 100% at 50% 0%, color-mix(in srgb, var(--persona) 22%, transparent), transparent 70%); pointer-events: none; }
+.welcome-screen > h1, .welcome-screen > p, .welcome-writing { animation: section-in var(--dur-3) var(--ease-out) both; }
+.welcome-screen > p { animation-delay: 60ms; }
+.welcome-writing { animation-delay: 120ms; }
