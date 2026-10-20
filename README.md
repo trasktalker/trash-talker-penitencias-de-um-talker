@@ -338,7 +338,7 @@ Mudanças feitas hoje, em ordem de horário (Brasília, UTC-03:00).
 ### 17:19 - commit `ce0de10` "Descreva suas alterações"
 
 - **Landing animada:** `public/index.html` reescrito com GSAP, ScrollTrigger e Lenis, usando `public/css/landing-motion.css` e `public/js/landing-motion.js`. A landing antiga ficou em `public/index.original.html` (instruções para voltar estão no comentário do topo do `index.html`).
-- **Nova personalidade evAIsto** em `backend/personalities.py`, com prompt próprio, voz de TTS própria (`TTS_VOICES` em `ai.py`), borda amarela para as mensagens (`.msg-evaisto` em `app.css`) e nome/logo no mapa `PERSONAS` de `public/js/chat.js`.
+- **Nova personalidade EvAIsto** em `backend/personalities.py`, com prompt próprio, voz de TTS própria (`TTS_VOICES` em `ai.py`), borda amarela para as mensagens (`.msg-evaisto` em `app.css`) e nome/logo no mapa `PERSONAS` de `public/js/chat.js`.
 - **Ícones SVG novos:** `public/evaisto-completo.svg` e `public/mathias-completo.svg`.
 - **Botão "ouvir"** (`public/js/voice.js`): a personalidade agora vem do atributo `data-personality` da bolha, e não mais de uma checagem fixa entre MathIAs e TrashTalker.
 - **Modelo do chat** em `ai.py` trocado para `gemini-4-argon` (Trash e Talker), com as menções no README e em `docs/processo.md` atualizadas.
@@ -349,7 +349,7 @@ Mudanças feitas hoje, em ordem de horário (Brasília, UTC-03:00).
 
 ### Sem commit ainda
 
-- **evAIsto, prompt revisado:** tratamento de situações graves (CVV 188, SAMU 192), limite para flerte com resposta padrão, acolhimento quando a pessoa está triste, sem palavrões e sem emojis, no máximo uma pergunta por mensagem.
+- **EvAIsto, prompt revisado:** tratamento de situações graves (CVV 188, SAMU 192), limite para flerte com resposta padrão, acolhimento quando a pessoa está triste, sem palavrões e sem emojis, no máximo uma pergunta por mensagem.
 - **`.env.example` removido** do repositório. Horário não registrado.
 - **Correções (18:56):** referências ao modelo do chat no README, em `docs/processo.md` (R-02) e no comentário de `ai.py` atualizadas para `gemini-3.5-flash-lite`; alias `SYSTEM_PROMPT` removido de `backend/personalities.py`. As menções ao `.env.example` foram mantidas.
 

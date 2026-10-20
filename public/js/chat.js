@@ -129,7 +129,7 @@ function resizeComposerInput(input) {
 var PERSONAS = {
   trashtalker: { name: "TrashTalker", img: "/avatars/persona-trashtalker.svg", sub: "Um assistente de socialização" },
   mathias: { name: "MathIAs", img: "/avatars/persona-mathias.svg", sub: "Só um amigo engraçado, e vagabundo" },
-  evaisto: { name: "evAIsto", img: "/avatars/persona-evaisto.svg", sub: "O amigo do absurdo com cara séria" }
+  evaisto: { name: "EvAIsto", img: "/avatars/persona-evaisto.svg", sub: "O amigo do absurdo com cara séria" }
 };
 // Quem está logado (foto/avatar no balão do usuário). Falha silenciosa: o ícone genérico continua valendo.
 var usuarioAtual = null, animarEntrada = false;
