@@ -246,9 +246,9 @@ TTS_TIMEOUT_SECONDS = 30
 # Uma voz por personalidade (voice_id do ElevenLabs), combinando com o
 # jeito de cada uma.
 TTS_VOICES = {
-    "trashtalker": "F7823wtD50WK1gnmgBk5",
-    "mathias": "Jvj2FoZHFrWICKQxQXqy",
-    "evaisto": "ETf5cmpNIbpSiXmBaR2m",
+    "trashtalker": "bIHbv24MWmeRgasZH58o",  # Will - jovem, amigável, relaxado
+    "mathias": "IKne3meq5aSn9XLyUdCD",  # Charlie - energético, natural
+    "evaisto": "CwhRBWXzGAHq8TQ4Fs17",  # Roger - confiante, tranquilo
 }
 
 
