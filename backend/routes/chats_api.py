@@ -344,7 +344,11 @@ def cancel_message(chat_id):
         return jsonify({"ok": True})
 
     execute("DELETE FROM messages WHERE id = %s", (ultima["id"],))
+    _reset_title_if_empty(chat_id)
+    return jsonify({"ok": True})
 
+
+def _reset_title_if_empty(chat_id):
     # Se a conversa ficou vazia, era a primeira mensagem - e o título
     # automático veio justamente dela (ver send_message). Desfaz também,
     # senão sobra na barra lateral uma conversa vazia batizada com um texto
@@ -355,6 +359,32 @@ def cancel_message(chat_id):
     if restantes and restantes["total"] == 0:
         execute("UPDATE chats SET title = %s WHERE id = %s", ("New Chat", chat_id))
 
+
+@chats_api.route("/chats/<chat_id>/messages/<message_id>/delete", methods=["POST"])
+@require_auth
+def delete_message(chat_id, message_id):
+    """
+    Apaga uma mensagem do usuário e tudo que veio depois dela (a conversa
+    volta àquele ponto). É também a primeira metade de "editar": o frontend
+    corta aqui e reenvia o texto novo por POST /messages.
+    """
+    chat = get_owned_chat(chat_id, g.user["id"])
+    if not chat:
+        return jsonify({"error": "Conversa não encontrada"}), 404
+
+    alvo = query_one(
+        "SELECT created_at FROM messages WHERE id = %s AND chat_id = %s AND role = 'user'",
+        (message_id, chat_id),
+    )
+    if not alvo:
+        return jsonify({"error": "Mensagem não encontrada"}), 404
+
+    execute(
+        "DELETE FROM messages WHERE chat_id = %s AND created_at >= %s",
+        (chat_id, alvo["created_at"]),
+    )
+    execute("UPDATE chats SET updated_at = now() WHERE id = %s", (chat_id,))
+    _reset_title_if_empty(chat_id)
     return jsonify({"ok": True})
 
 

@@ -48,6 +48,14 @@ document.addEventListener("DOMContentLoaded", function () {
     var input = document.getElementById("chat-input"), text = input.value.trim();
     if (!text) return;
     var messages = document.getElementById("chat-messages");
+    if (edicaoPendente) {
+      // Editar = cortar a conversa na mensagem antiga e reenviar o texto novo.
+      // Se o corte falhar nada é enviado e o rascunho continua no campo.
+      try {
+        await apiFetch("/api/chats/" + location.pathname.split("/").pop() + "/messages/" + edicaoPendente.dataset.id + "/delete", { method: "POST" });
+      } catch (error) { showUIMessage(error.message); return; }
+      removerDaqui(edicaoPendente); edicaoPendente = null;
+    }
     var empty = messages.querySelector(".chat-empty"); if (empty) empty.remove();
     var userBubble = buildMessageBubble("user", text), typingBubble = buildTypingBubble(chatPicker && chatPicker.atual.personality);
     messages.append(userBubble, typingBubble); input.value = "";
@@ -62,6 +70,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
       if (envioEmAndamento !== pedido) return;
       envioEmAndamento = null; typingBubble.remove();
+      if (result.userMessage) addMessageActions(userBubble, result.userMessage.id);
       setComposerPensando("chat-input", "chat-submit", false);
       if (result.cancelled || !result.assistantMessage) {
         recoveryMessage("O servidor não confirmou uma resposta. Reabra a conversa para conferir o histórico.", pedido.chatId);
@@ -106,6 +115,7 @@ function wireComposer(formId, inputId, submitId, onSubmit) {
   input.addEventListener("input", sync); sync();
   input.addEventListener("keydown", function (event) {
     if (event.key === "Enter" && !event.shiftKey && !event.isComposing) { event.preventDefault(); form.requestSubmit(); }
+    if (event.key === "Escape" && edicaoPendente) { cancelarEdicao(); input.value = ""; sync(); }
   });
   form.addEventListener("submit", onSubmit);
 }
@@ -126,7 +136,49 @@ var usuarioAtual = null, animarEntrada = false;
 var usuarioPronto = typeof getDashboard === "function"
   ? getDashboard().then(function (data) { usuarioAtual = data.user; return data; }).catch(function () { return null; })
   : Promise.resolve(null);
-function buildMessageBubble(role, content, personality) {
+var ICONE_EDITAR = '<svg aria-hidden="true" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 3.5l4 4L7 17H3v-4z"/></svg>';
+var ICONE_APAGAR = '<svg aria-hidden="true" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h12M8 6V4h4v2M6 6l1 11h6l1-11"/></svg>';
+var edicaoPendente = null;
+// Editar e apagar cortam a conversa a partir desta mensagem (ver delete_message no backend).
+function addMessageActions(bubble, id) {
+  if (bubble.querySelector(".msg-actions")) return;
+  bubble.dataset.id = id;
+  var box = document.createElement("div"); box.className = "msg-actions";
+  [["Editar mensagem", ICONE_EDITAR, function () { iniciarEdicao(bubble); }],
+   ["Apagar mensagem", ICONE_APAGAR, function () { apagarMensagem(bubble); }]].forEach(function (a) {
+    var button = document.createElement("button"); button.type = "button"; button.className = "msg-action";
+    button.title = a[0]; button.setAttribute("aria-label", a[0]); button.innerHTML = a[1];
+    button.addEventListener("click", a[2]); box.appendChild(button);
+  });
+  bubble.appendChild(box);
+}
+function removerDaqui(bubble) {
+  while (bubble.nextElementSibling) bubble.nextElementSibling.remove();
+  bubble.remove();
+}
+function cancelarEdicao() {
+  if (!edicaoPendente) return;
+  edicaoPendente.classList.remove("is-editing"); edicaoPendente = null;
+}
+function iniciarEdicao(bubble) {
+  var input = document.getElementById("chat-input"); if (!input || input.disabled) return;
+  cancelarEdicao();
+  edicaoPendente = bubble; bubble.classList.add("is-editing");
+  input.value = bubble.querySelector(".msg-content").textContent;
+  input.dispatchEvent(new Event("input")); input.focus();
+}
+function apagarMensagem(bubble) {
+  showConfirmModal({
+    title: "Apagar mensagem",
+    message: "Isto apaga esta mensagem e tudo que veio depois dela na conversa. Esta ação não pode ser desfeita.",
+    confirmText: "Apagar", confirmLoadingText: "Apagando...", danger: true,
+    onConfirm: function () {
+      return apiFetch("/api/chats/" + location.pathname.split("/").pop() + "/messages/" + bubble.dataset.id + "/delete", { method: "POST" })
+        .then(function () { if (edicaoPendente === bubble) cancelarEdicao(); removerDaqui(bubble); });
+    }
+  });
+}
+function buildMessageBubble(role, content, personality, id) {
   var bubble = document.createElement("div"), avatar = document.createElement("div"), text = document.createElement("div");
   bubble.className = "msg-bubble " + (role === "user" ? "msg-user" : "msg-assistant") + (animarEntrada ? " msg-enter" : "");
   avatar.className = "msg-avatar"; avatar.setAttribute("aria-hidden", "true");
@@ -136,6 +188,7 @@ function buildMessageBubble(role, content, personality) {
       avatar.classList.add("has-photo"); avatar.innerHTML = renderAvatarHTML(usuarioAtual.image, usuarioAtual.name, 36);
     } else avatar.innerHTML = '<svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="6" r="3"/><path d="M3 18c0-8 14-8 14 0"/></svg>';
     bubble.append(avatar, text);
+    if (id) addMessageActions(bubble, id);
   } else {
     var known = PERSONAS[personality];
     var author = document.createElement("span"); author.className = "msg-author";
@@ -178,7 +231,7 @@ async function loadChatMessagesIfNeeded() {
   // message.personality é NULL nas respostas gravadas antes dessa coluna existir;
   // nelas o melhor palpite disponível é a personalidade atual da conversa.
   data.messages.forEach(function (message) {
-    container.appendChild(buildMessageBubble(message.role, message.content, message.personality || data.chat.personality));
+    container.appendChild(buildMessageBubble(message.role, message.content, message.personality || data.chat.personality, message.id));
   });
   animarEntrada = true;
   container.scrollTop = container.scrollHeight; emitTT("chat", data);
@@ -206,7 +259,7 @@ function setComposerPensando(inputId, submitId, thinking) {
   submit.title = thinking ? "Parar e desfazer envio" : "Enviar mensagem";
   submit.setAttribute("aria-label", submit.title);
   submit.disabled = cancelamentoEmAndamento || (!thinking && !input.value.trim());
-  document.querySelectorAll(".voice-mic-button, .personality-picker-trigger, .personality-picker-option").forEach(function (button) { button.disabled = thinking || cancelamentoEmAndamento; });
+  document.querySelectorAll(".voice-mic-button, .personality-picker-trigger, .personality-picker-option, .msg-action").forEach(function (button) { button.disabled = thinking || cancelamentoEmAndamento; });
   emitTT("generating", thinking || cancelamentoEmAndamento);
   if (!thinking) input.focus();
 }

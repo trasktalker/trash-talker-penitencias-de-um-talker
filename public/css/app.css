@@ -2430,3 +2430,16 @@ html.theme-vt::view-transition-new(root) { z-index: 1; }
 .avatar-trigger { order: 1; }
 .avatar-picker > .field-hint { order: 2; }
 .avatar-menu { order: 3; position: static; flex: 0 0 100%; width: auto; max-width: none; justify-items: center; box-shadow: none; background: var(--card); animation: none; }
+
+/* Editar/apagar mensagem do usuário: apagados até o mouse chegar perto (sempre visíveis em toque). */
+.msg-actions { display: flex; align-self: center; gap: 0.15rem; flex-shrink: 0; }
+.msg-action {
+  width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;
+  border: 0; border-radius: 0.5rem; background: transparent; color: var(--muted-foreground);
+  cursor: pointer; opacity: 0; transition: opacity 0.15s ease, color 0.15s ease;
+}
+.msg-bubble:hover .msg-action, .msg-action:focus-visible { opacity: 1; }
+.msg-action:hover:not(:disabled) { color: var(--foreground); }
+.msg-action:disabled { cursor: default; opacity: 0.4; }
+@media (hover: none) { .msg-action { opacity: 1; width: 36px; height: 36px; } }
+.msg-bubble.is-editing .msg-content { outline: 2px solid var(--primary); outline-offset: 2px; }

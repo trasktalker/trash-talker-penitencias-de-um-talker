@@ -350,3 +350,64 @@ def test_synthesize_speech_chama_o_elevenlabs_com_a_voz_da_personalidade(monkeyp
     assert ai.synthesize_speech("oi", "mathias") == MP3_FALSO
     assert ai.TTS_VOICES["mathias"] in pedidos[0].full_url
     assert pedidos[0].get_header("Xi-api-key") == "chave-falsa"
+
+
+# --------------------------------------------------------------------------
+# Apagar / editar mensagem (corta a conversa a partir da mensagem do usuário)
+# --------------------------------------------------------------------------
+
+
+def _duas_rodadas(cliente, conversa):
+    cliente.post(f"/api/chats/{conversa}/messages", json={"content": "primeira"})
+    segunda = cliente.post(f"/api/chats/{conversa}/messages", json={"content": "segunda"})
+    return segunda.get_json()["userMessage"]["id"]
+
+
+def test_apagar_mensagem_remove_ela_e_tudo_depois(cliente, conversa, ia_falsa):
+    segunda_id = _duas_rodadas(cliente, conversa)
+
+    resposta = cliente.post(f"/api/chats/{conversa}/messages/{segunda_id}/delete")
+    assert resposta.status_code == 200
+
+    salvas = db.query("SELECT role, content FROM messages ORDER BY created_at ASC")
+    assert [m["role"] for m in salvas] == ["user", "assistant"]
+    assert salvas[0]["content"] == "primeira"
+
+
+def test_editar_mensagem_reenvia_com_historico_cortado(cliente, conversa, ia_falsa):
+    segunda_id = _duas_rodadas(cliente, conversa)
+
+    cliente.post(f"/api/chats/{conversa}/messages/{segunda_id}/delete")
+    cliente.post(f"/api/chats/{conversa}/messages", json={"content": "segunda editada"})
+
+    assert [m["content"] for m in ia_falsa["chamadas"][-1]["history"]] == [
+        "primeira",
+        "Resposta simulada do TrashTalker.",
+        "segunda editada",
+    ]
+
+
+def test_apagar_unica_mensagem_volta_o_titulo(cliente, conversa, ia_falsa):
+    primeira = cliente.post(
+        f"/api/chats/{conversa}/messages", json={"content": "oi"}
+    ).get_json()["userMessage"]["id"]
+
+    cliente.post(f"/api/chats/{conversa}/messages/{primeira}/delete")
+
+    assert db.query("SELECT * FROM messages") == []
+    assert db.query_one("SELECT title FROM chats")["title"] == "New Chat"
+
+
+def test_nao_e_possivel_apagar_mensagem_de_conversa_alheia(
+    cliente, aplicacao, usuario_logado, ia_falsa
+):
+    outro = _segundo_usuario(aplicacao)
+    conversa_alheia = outro.post("/api/chats").get_json()["id"]
+    mensagem = outro.post(
+        f"/api/chats/{conversa_alheia}/messages", json={"content": "oi"}
+    ).get_json()["userMessage"]["id"]
+
+    resposta = cliente.post(f"/api/chats/{conversa_alheia}/messages/{mensagem}/delete")
+
+    assert resposta.status_code == 404
+    assert len(db.query("SELECT * FROM messages")) == 2
