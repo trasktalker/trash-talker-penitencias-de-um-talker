@@ -112,7 +112,7 @@ python-app/
 │   ├── db.py                 # pool de conexões Postgres + helpers de query
 │   ├── auth.py               # sessão por cookie, hash/política de senha, tokens de reset, aceite dos termos
 │   ├── two_factor.py         # 2FA (TOTP, códigos de recuperação, limite de tentativas)
-│   ├── ai.py                 # Gemini: resposta do chat (níveis de esforço) e texto -> fala (TTS)
+│   ├── ai.py                 # Gemini: resposta do chat (níveis de esforço); texto -> fala (TTS) via ElevenLabs
 │   ├── personalities.py      # personas (TrashTalker, MathIAs), system prompts e "preguiça" do MathIAs
 │   ├── email_utils.py        # envio do e-mail de redefinição via SMTP
 │   ├── avatars.py            # lista fixa dos avatares ilustrados
@@ -312,7 +312,7 @@ Também já existem:
   ainda não aceitou a versão atual não conversa até aceitar (403 com
   `needsConsent`).
 - **Botão "ouvir"** em cada resposta: `POST /api/tts` gera a fala com o
-  Gemini TTS, com uma voz por personalidade; se falhar, o navegador lê
+  ElevenLabs (`ELEVENLABS_API_KEY`), com uma voz por personalidade; se falhar, o navegador lê
   com a voz dele (`public/js/voice.js`).
 - **Exportação dos dados** da conta em JSON (`GET /api/account/export`).
 

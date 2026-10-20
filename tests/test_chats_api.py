@@ -264,7 +264,7 @@ def test_aceite_exige_login(cliente):
 # Texto -> fala (botão "ouvir")
 # --------------------------------------------------------------------------
 
-WAV_FALSO = b"RIFF....WAVEfmt "
+MP3_FALSO = b"ID3...."
 
 
 def test_tts_exige_login(cliente):
@@ -276,14 +276,14 @@ def test_tts_devolve_audio_com_a_voz_da_personalidade(cliente, usuario_logado, m
 
     def _falsa(text, personality):
         chamadas.append((text, personality))
-        return WAV_FALSO
+        return MP3_FALSO
 
     monkeypatch.setattr("backend.routes.chats_api.synthesize_speech", _falsa)
     resposta = cliente.post("/api/tts", json={"text": " Fala, parça! ", "personality": "mathias"})
 
     assert resposta.status_code == 200
-    assert resposta.mimetype == "audio/wav"
-    assert resposta.data == WAV_FALSO
+    assert resposta.mimetype == "audio/mpeg"
+    assert resposta.data == MP3_FALSO
     assert chamadas == [("Fala, parça!", "mathias")]
 
 
@@ -291,14 +291,14 @@ def test_tts_personalidade_invalida_usa_a_padrao(cliente, usuario_logado, monkey
     chamadas = []
     monkeypatch.setattr(
         "backend.routes.chats_api.synthesize_speech",
-        lambda text, personality: chamadas.append(personality) or WAV_FALSO,
+        lambda text, personality: chamadas.append(personality) or MP3_FALSO,
     )
     cliente.post("/api/tts", json={"text": "oi", "personality": "inexistente"})
     assert chamadas == ["trashtalker"]
 
 
 def test_tts_recusa_texto_vazio_ou_longo_demais(cliente, usuario_logado, monkeypatch):
-    monkeypatch.setattr("backend.routes.chats_api.synthesize_speech", lambda *_: WAV_FALSO)
+    monkeypatch.setattr("backend.routes.chats_api.synthesize_speech", lambda *_: MP3_FALSO)
     assert cliente.post("/api/tts", json={"text": "   "}).status_code == 400
     assert cliente.post("/api/tts", json={"text": "a" * 2001}).status_code == 400
 
@@ -307,7 +307,7 @@ def test_tts_sem_aceite_devolve_403(cliente, usuario_logado, monkeypatch):
     chamadas = []
     monkeypatch.setattr(
         "backend.routes.chats_api.synthesize_speech",
-        lambda *a: chamadas.append(a) or WAV_FALSO,
+        lambda *a: chamadas.append(a) or MP3_FALSO,
     )
     db.execute("UPDATE users SET consent_version = NULL")
     resposta = cliente.post("/api/tts", json={"text": "oi"})
@@ -315,7 +315,7 @@ def test_tts_sem_aceite_devolve_403(cliente, usuario_logado, monkeypatch):
     assert chamadas == []
 
 
-def test_tts_falha_do_gemini_devolve_502(cliente, usuario_logado, monkeypatch):
+def test_tts_falha_do_elevenlabs_devolve_502(cliente, usuario_logado, monkeypatch):
     def _falha(*_):
         raise RuntimeError("cota esgotada (simulada)")
 
@@ -323,3 +323,30 @@ def test_tts_falha_do_gemini_devolve_502(cliente, usuario_logado, monkeypatch):
     resposta = cliente.post("/api/tts", json={"text": "oi"})
     assert resposta.status_code == 502
     assert "error" in resposta.get_json()
+
+
+def test_synthesize_speech_chama_o_elevenlabs_com_a_voz_da_personalidade(monkeypatch):
+    from backend import ai
+
+    pedidos = []
+
+    class _Resposta:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_):
+            return False
+
+        def read(self):
+            return MP3_FALSO
+
+    def _urlopen(request, timeout):
+        pedidos.append(request)
+        return _Resposta()
+
+    monkeypatch.setenv("ELEVENLABS_API_KEY", "chave-falsa")
+    monkeypatch.setattr("urllib.request.urlopen", _urlopen)
+
+    assert ai.synthesize_speech("oi", "mathias") == MP3_FALSO
+    assert ai.TTS_VOICES["mathias"] in pedidos[0].full_url
+    assert pedidos[0].get_header("Xi-api-key") == "chave-falsa"

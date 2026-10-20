@@ -231,115 +231,58 @@ def generate_reply(
 # Texto -> fala (botão "ouvir" de cada resposta, ver public/js/voice.js)
 # --------------------------------------------------------------------------
 # Antes o áudio vinha só da voz do navegador (Web Speech API), que soa
-# robótica. O Gemini TTS gera fala natural e aceita uma instrução de
-# estilo ("acolhedor, calmo..."). Se ele falhar (cota, rede), a rota
-# devolve 502 e o frontend volta sozinho pra voz do navegador.
-TTS_MODEL = "gemini-3.8-flash-tts"
-TTS_LANGUAGE = "pt-BR"
-TTS_SAMPLE_RATE = 24000  # formato do Gemini TTS: 24 kHz, mono, 16 bits
-TTS_URL = "https://generativelanguage.googleapis.com/v1beta/interactions"
-# Nos testes o TTS levou de 5 a ~22s, mas às vezes passa de 40s. Melhor
-# desistir em 30s (bem abaixo do maxDuration de 60s do vercel.json) e deixar
-# o navegador ler com a voz dele do que deixar a pessoa esperando.
+# robótica. O ElevenLabs gera fala natural. Se ele falhar (créditos, rede),
+# a rota devolve 502 e o frontend volta sozinho pra voz do navegador.
+TTS_MODEL = "eleven_flash_v2_5"  # metade dos créditos por caractere e rápido
+TTS_LANGUAGE = "pt"
+TTS_URL = (
+    "https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
+    "?output_format=mp3_44100_128"
+)
+# Melhor desistir em 30s (bem abaixo do maxDuration de 60s do vercel.json)
+# e deixar o navegador ler com a voz dele do que deixar a pessoa esperando.
 TTS_TIMEOUT_SECONDS = 30
 
-# Uma voz por personalidade, combinando com o jeito de cada uma. "style"
-# é a instrução de como falar - vale pra fala inteira.
+# Uma voz por personalidade (voice_id do ElevenLabs), combinando com o
+# jeito de cada uma.
 TTS_VOICES = {
-    "trashtalker": {
-        "voice": "Achird",  # "Friendly"
-        "style": "amigo próximo e acolhedor, calmo e tranquilo, jeito natural "
-        "de jovem brasileiro conversando",
-    },
-    "mathias": {
-        "voice": "Puck",  # "Upbeat"
-        "style": "jovem brasileiro descontraído e bem-humorado, ritmo leve de "
-        "conversa entre amigos",
-    },
-    "evaisto": {
-        "voice": "Schedar",  # "Even"
-        "style": "jovem brasileiro de 18 anos, humor seco e deadpan, fala "
-        "tranquila e sem rir das próprias piadas",
-    },
+    "trashtalker": "bIHbv24MWmeRgasZH58o",  # Will - jovem, amigável, relaxado
+    "mathias": "IKne3meq5aSn9XLyUdCD",  # Charlie - energético, natural
+    "evaisto": "CwhRBWXzGAHq8TQ4Fs17",  # Roger - confiante, tranquilo
 }
-
-
-def _pcm_to_wav(pcm):
-    """Põe cabeçalho WAV num PCM cru (16 bits, mono, 24 kHz) - o navegador
-    não sabe tocar PCM sem cabeçalho."""
-    import io
-    import wave
-
-    buffer = io.BytesIO()
-    with wave.open(buffer, "wb") as wav:
-        wav.setnchannels(1)
-        wav.setsampwidth(2)
-        wav.setframerate(TTS_SAMPLE_RATE)
-        wav.writeframes(pcm)
-    return buffer.getvalue()
 
 
 def synthesize_speech(text, personality=DEFAULT_PERSONALITY):
     """
-    Gera o áudio (WAV) de `text` falado com a voz da personalidade.
-    Lança exceção se o Gemini falhar ou não devolver áudio - quem chama
+    Gera o áudio (MP3) de `text` falado com a voz da personalidade.
+    Lança exceção se o ElevenLabs falhar ou não devolver áudio - quem chama
     (routes/chats_api.py:text_to_speech) transforma isso em 502.
 
-    Chama a API REST direto, sem o SDK: o client.interactions do SDK tenta
-    de novo sozinho em 429 respeitando o Retry-After do Google - que, com
-    a cota esgotada, chega a horas -, e não deixa desligar isso por chamada.
-    Aqui é uma tentativa só, com tempo limite.
+    Chama a API REST direto (urllib, sem SDK): uma tentativa só, com tempo
+    limite.
     """
-    import base64
     import json
     import urllib.request
 
-    api_key = os.environ.get("GEMINI_API_KEY")
+    api_key = os.environ.get("ELEVENLABS_API_KEY")
     if not api_key:
-        raise RuntimeError("A variável de ambiente GEMINI_API_KEY não foi definida")
+        raise RuntimeError("A variável de ambiente ELEVENLABS_API_KEY não foi definida")
 
-    voice = TTS_VOICES.get(personality) or TTS_VOICES[DEFAULT_PERSONALITY]
-    body = {
-        "model": TTS_MODEL,
-        "input": [{
-            "type": "user_input",
-            "content": [{
-                "type": "text",
-                "text": text,
-                "annotations": [{"type": "speech_metadata", "style": voice["style"]}],
-            }],
-        }],
-        "response_format": {"type": "audio"},
-        "generation_config": {
-            "speech_config": [{"voice": voice["voice"], "language": TTS_LANGUAGE}]
-        },
-    }
+    voice_id = TTS_VOICES.get(personality) or TTS_VOICES[DEFAULT_PERSONALITY]
+    body = {"text": text, "model_id": TTS_MODEL, "language_code": TTS_LANGUAGE}
     request = urllib.request.Request(
-        TTS_URL,
+        TTS_URL.format(voice_id=voice_id),
         data=json.dumps(body).encode("utf-8"),
-        headers={"Content-Type": "application/json", "x-goog-api-key": api_key},
+        headers={
+            "Content-Type": "application/json",
+            "Accept": "audio/mpeg",
+            "xi-api-key": api_key,
+        },
         method="POST",
     )
-    # HTTPError (429 de cota, 5xx...) sobe direto pra rota.
+    # HTTPError (401 de chave, 429/quota_exceeded, 5xx...) sobe direto pra rota.
     with urllib.request.urlopen(request, timeout=TTS_TIMEOUT_SECONDS) as response:
-        interaction = json.loads(response.read())
-
-    # O áudio vem em steps[].content[] com type "audio" (base64).
-    data = next(
-        (
-            item.get("data")
-            for step in interaction.get("steps") or []
-            if step.get("type") == "model_output"
-            for item in step.get("content") or []
-            if item.get("type") == "audio" and item.get("data")
-        ),
-        None,
-    )
-    if not data:
-        raise RuntimeError("O Gemini TTS não devolveu áudio")
-    audio_bytes = base64.b64decode(data)
-    # O 3.8 TTS devolve WAV pronto; modelos/formatos antigos devolviam PCM
-    # cru (audio/l16) - nesse caso o cabeçalho é montado aqui.
-    if not audio_bytes.startswith(b"RIFF"):
-        audio_bytes = _pcm_to_wav(audio_bytes)
+        audio_bytes = response.read()
+    if not audio_bytes:
+        raise RuntimeError("O ElevenLabs não devolveu áudio")
     return audio_bytes

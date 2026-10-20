@@ -9,7 +9,7 @@
 //     push-to-talk, pela Web Speech API do navegador. O texto reconhecido
 //     só PREENCHE o campo; quem envia continua sendo a pessoa.
 //   - TTS (texto -> fala): botão de alto-falante em cada resposta da IA.
-//     Usa a voz natural do Gemini (POST /api/tts); se o servidor falhar,
+//     Usa a voz natural do ElevenLabs (POST /api/tts); se o servidor falhar,
 //     lê com a voz do próprio navegador.
 //
 // Requisitos do navegador:
@@ -203,7 +203,7 @@ function initVoiceInput(inputEl, onFinalTranscript) {
 // Texto -> fala (TTS)
 // --------------------------------------------------------------------------
 
-// Caminho principal: a voz natural do Gemini, gerada no servidor
+// Caminho principal: a voz natural do ElevenLabs, gerada no servidor
 // (POST /api/tts, ver backend/ai.py:synthesize_speech) e tocada num
 // <audio>. Se o servidor falhar (cota, rede, demora), cai na voz do
 // próprio navegador (speechSynthesis) - mais robótica, mas a pessoa nunca
@@ -282,7 +282,7 @@ function encerrarFala(atual) {
 
 /**
  * Lê `texto` em voz alta, interrompendo qualquer leitura anterior: tenta a
- * voz do Gemini e, se não der, a do navegador.
+ * voz do ElevenLabs e, se não der, a do navegador.
  *
  * @param {string} texto
  * @param {HTMLButtonElement} [botao] - botão que dispara, para refletir o estado
@@ -295,7 +295,7 @@ function speakMessage(texto, botao, personality) {
   falaAtual = atual;
 
   // Áudio já gerado para este mesmo texto: toca de novo na hora, sem
-  // gastar outra chamada (a cota do Gemini TTS é limitada).
+  // gastar outra chamada (os créditos do ElevenLabs são limitados).
   if (botao && botao._audio && botao._audio.texto === texto) {
     tocarAudio(atual, botao._audio.url, texto);
     return;
@@ -380,7 +380,7 @@ function falarNoNavegador(atual, texto) {
 
 /**
  * Acrescenta o botão de ouvir a uma bolha de resposta da IA. Aparece em
- * qualquer navegador: o áudio do Gemini toca em todos, e a voz do
+ * qualquer navegador: o áudio do ElevenLabs toca em todos, e a voz do
  * navegador só entra como reserva.
  *
  * O texto é lido do DOM só na hora do clique, e não agora, porque a

@@ -255,7 +255,7 @@ def send_message(chat_id):
 
 
 # As respostas agora são curtas (1-3 frases); o limite só evita que a rota
-# vire um gerador de áudio de texto arbitrário às custas da cota do Gemini.
+# vire um gerador de áudio de texto arbitrário às custas dos créditos do ElevenLabs.
 MAX_TTS_CHARS = 2000
 
 
@@ -263,7 +263,7 @@ MAX_TTS_CHARS = 2000
 @require_auth
 def text_to_speech():
     """
-    Áudio (WAV) de uma resposta da IA, com a voz da personalidade - usado
+    Áudio (MP3) de uma resposta da IA, com a voz da personalidade - usado
     pelo botão "ouvir" (public/js/voice.js). Em qualquer falha devolve 502
     e o frontend lê com a voz do próprio navegador.
     """
@@ -288,7 +288,7 @@ def text_to_speech():
 
     # Sem cache HTTP (é POST): quem guarda o áudio pra tocar de novo sem
     # gastar outra chamada é o próprio voice.js, na bolha da mensagem.
-    return Response(audio, mimetype="audio/wav")
+    return Response(audio, mimetype="audio/mpeg")
 
 
 @chats_api.route("/chats/<chat_id>/delete", methods=["POST"])
