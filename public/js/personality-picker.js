@@ -173,7 +173,9 @@ function initPersonalityPicker(rootEl, groups, onChange) {
     // Medido a cada abertura porque a posição do campo de mensagem muda
     // conforme a tela e a quantidade de mensagens.
     var rect = trigger.getBoundingClientRect();
-    var espacoAcima = rect.top - 16;
+    var topbar = document.querySelector(".topbar");
+    var topo = topbar ? topbar.getBoundingClientRect().bottom : 0; // a barra do topo cobre o menu
+    var espacoAcima = rect.top - Math.max(topo, 0) - 16;
     var espacoAbaixo = window.innerHeight - rect.bottom - 16;
     var abaixo = espacoAcima < 240 && espacoAbaixo > espacoAcima;
     menu.style.bottom = abaixo ? "auto" : "calc(100% + 0.5rem)";
