@@ -185,7 +185,8 @@ function initPersonalityPicker(rootEl, groups, onChange) {
       requestAnimationFrame(function () {
         if (!open) return;
         menu.classList.add("open");
-        (menu.querySelector('.selected') || menu.querySelector('button')).focus();
+        menu.scrollTop = 0; // começa pelo primeiro item, não pelo selecionado
+        (menu.querySelector('.selected') || menu.querySelector('button')).focus({ preventScroll: true });
       });
     });
     document.addEventListener("keydown", onKeydown);
